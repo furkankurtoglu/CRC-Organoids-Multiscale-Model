@@ -1,0 +1,74 @@
+GLUT 1 p-value:0 
+HK 1 p-value:0 
+HPI 1 p-value:0 
+PFK 1 p-value:0 
+FBP 1 p-value:0 
+ALDO 1 p-value:0 
+TPI 1 p-value:0 
+GAPDH 1 p-value:0 
+13DPG-phophatase 1 p-value:0 
+PGK 1 p-value:0 
+DPGM 1 p-value:0 
+DPGase 1 p-value:0 
+PGAM 1 p-value:0 
+ENO 1 p-value:0 
+PYK 1 p-value:0 
+PDH 1 p-value:0 
+G6PDH 1 p-value:0 
+PGL 1 p-value:0 
+6PGDH 1 p-value:0 
+RPE 1 p-value:0 
+RPM 1 p-value:0 
+TA 1 p-value:0 
+TK1 1 p-value:0 
+TK2 1 p-value:0 
+CS 1 p-value:0 
+CLY 1 p-value:0 
+IDH1 1 p-value:0 
+IDH3 1 p-value:0 
+IDH2 1 p-value:0 
+AKGD 1 p-value:0 
+SCOAS 1 p-value:0 
+SDHA 1 p-value:0 
+SDHC(D) 1 p-value:0 
+FUM2 1 p-value:0 
+FUM1 1 p-value:0 
+MDH2 1 p-value:0 
+MDH1 1 p-value:0 
+MMALIC 1 p-value:0 
+succinate-Q reductase 1 p-value:0 
+cytochrome oxidase 1 p-value:0 
+NADH-Q reductase 1 p-value:0 
+ATP synthase 1 p-value:0 
+LDH 1 p-value:0 
+MCT 1 p-value:0 
+GLNS 1 p-value:0 
+GDH2 1 p-value:0 
+GDH1(3) 1 p-value:0 
+H2O (m-c) 1 p-value:0 
+O2 (m-c) 1 p-value:0 
+CO2 (m-c) 1 p-value:0 
+Pi (m-c) 1 p-value:0 
+H (m-c) 1 p-value:0 
+MPC 1 p-value:0 
+NADH (m-c) 1 p-value:0 
+NH4 (m-c) 1 p-value:0 
+H2O (e-c) 1 p-value:0 
+O2 (e-c) 1 p-value:0 
+CO2 (e-c) 1 p-value:0 
+Pi (e-c) 1 p-value:0 
+H (e-c) 1 p-value:0 
+ASCT2 1 p-value:0 
+NH4 (e-c) 1 p-value:0 
+H2O (b-e) 1 p-value:0 
+O2 (b-e) 1 p-value:0 
+CO2 (b-e) 1 p-value:0 
+Pi (b-e) 1 p-value:0 
+H (b-e) 1 p-value:0 
+Lac (b-e) 1 p-value:0 
+Glc (b-e) 1 p-value:0 
+Gln (b-e) 1 p-value:0 
+NH4 (b-e) 1 p-value:0 
+ATPase 1 p-value:0 
+biomass_obj 1 p-value:0 
+GS 1 p-value:0 
