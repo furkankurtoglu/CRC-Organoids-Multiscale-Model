@@ -203,7 +203,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                         "M_co2_b[c]"	-500	500	;	% 3 M_co2_b
                         "M_pi_b[c]"	-500	500	;	% 4 M_pi_b
                         "M_h_b[c]"	-500	500	;	% 5 M_h_b
-                        "M_lac_L_b[c]"	0	500;	% 6 M_lac_L_b
+                        "M_lac_L_b[c]"	-0.283	-0.283;	% 6 M_lac_L_b
                         "M_glc_D_b[c]"	glc_bds(k)	glc_bds(k)	;	% 7 M_glc_D_b
                         "M_gln_L_b[c]"	gln_bds(m)	gln_bds(m);	% 8 M_gln_L_b
                         "M_nh4_b[c]"	-500	500	;	% 9 M_nh4_b
@@ -217,6 +217,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                     %WT_Model.model_lst{i} = new_Model;
                     %WT_Model.stat_lst(i) = stat;
                     WT_Model.sol_lst{i} = sol;
+                    lac_sol = sol.x(68);
                     solution = sol.x(73);
                     WT_Model.v_lst = [WT_Model.v_lst v];
                     WT_Model.r_lst = [WT_Model.r_lst r];
@@ -224,16 +225,17 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                     WT_Model.q_lst= [WT_Model.q_lst q];
                     WT_Model.initvalue_lst{i} = [WT_Model.initvalue_lst initvalue];
                     i=i+1;
-                    fprintf('m = %i\t %i\t %i\n', k,m,solution)
-                    sol_vector = [-1*glc_bds(k),-1*gln_bds(m),solution];
+                    fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
+                    sol_vector = [-1*glc_bds(k),-1*gln_bds(m),lac_sol,solution];
                     if save_data == "Y"
+                        %save('results.mat',"sol_vector")
                         writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data.csv',Delimiter=',',WriteMode='append');
-                end
+                    end
             end
         end
     end
     
-    %fprintf('%f\n',size(WT_Model.stat_lst));
+
 
 
 
@@ -302,8 +304,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     end
     
     
-    total_stat_lst = WT_Model.stat_lst & KRAS_Model.stat_lst; 
-        
+    total_stat_lst = WT_Model.stat_lst & KRAS_Model.stat_lst;
     data = [WT_Model.v_lst(:, total_stat_lst)'; KRAS_Model.v_lst(:, total_stat_lst)'];   
     data = reshape(data, [size(data, 1)/2, size(data, 2)*2]);
     genes = reactionNames;
@@ -333,7 +334,6 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     end
     fclose(fileID);
     
-     save([folder_path 'data.mat'], 'data', 'h_lst', 'p_lst', ...
-         'WT_Model', 'KRAS_Model');
+     save([folder_path 'data.mat'], 'data', 'h_lst', 'p_lst','WT_Model', 'KRAS_Model');
      fclose all;
 end

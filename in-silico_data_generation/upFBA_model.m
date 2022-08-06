@@ -224,10 +224,10 @@ function upFBA_model(init_value_data, fold_change_kras_data, fold_change_wt_data
             string = genes{i};
             string(genes{i}=='<')='_';
             string(genes{i}=='>')='_';
-            fprintf(string)
-            saveas(gcf, [folder_path sprintf('%02d', i) '_' string '.png']);
+         %   fprintf(string)
+       %     saveas(gcf, [folder_path sprintf('%02d', i) '_' string '.png']);
         else
-            saveas(gcf, [folder_path sprintf('%02d', i) '_' genes{i} '.png']);
+%            saveas(gcf, [folder_path sprintf('%02d', i) '_' genes{i} '.png']);
         end
     end   
 
