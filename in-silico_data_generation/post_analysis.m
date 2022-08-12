@@ -1,20 +1,25 @@
 %post analysis
-load max_WT_vs_KRAS_CRC_media\data.mat
+%%load max_WT_vs_KRAS_CRC_media\data.mat
 
-WT_size = size(WT_Model.sol_lst,2);
+%WT_size = size(WT_Model.sol_lst,2);
+M =  readmatrix("./data.csv");
 
-glu = zeros(WT_size,1);
-glt = zeros(WT_size,1);
-lac = zeros(WT_size,1);
-biomass = zeros(WT_size,1);
+glu = zeros(size(M,1),1);
+glt = zeros(size(M,1),1);
+lac = zeros(size(M,1),1);
+biomass = zeros(size(M,1),1);
 
-for i=1:WT_size
-    glu(i) = WT_Model.sol_lst{1,i}.full(69); %glu
-    glt(i) = WT_Model.sol_lst{1,i}.full(70); %glt
-    lac(i) = WT_Model.sol_lst{1,i}.full(68); %lac
-    biomass(i) = WT_Model.sol_lst{1,i}.full(73); %biomass
+for i=1:size(M,1)
+    glu(i) = M(i,1); %glu
+    glt(i) = M(i,2); %glt
+    lac(i) = M(i,3); %lac
+    biomass(i) = M(i,4); %biomass
 
 end
+figure(3)
+plot(lac,biomass)
+xlabel('lactate secretion rate (mM/hr)')
+ylabel('biomass creation rate (1/hr)')
 
 figure(1)
 [X1,Y1] = meshgrid(min(glu):0.0001:max(glu),min(glt):0.0001:max(glt));

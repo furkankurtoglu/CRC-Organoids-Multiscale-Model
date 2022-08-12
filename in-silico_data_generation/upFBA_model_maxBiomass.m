@@ -157,7 +157,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     
     %% clear all unsteady-state assumptions
     %% perform upFBA ------ Glycolysis, PPP, and TCA cycle
-    num_of_met_run = 4;
+    num_of_met_run = 100;
     num_of_FBA_runs = num_of_met_run*num_of_met_run;
     WT_Model = struct;
     WT_Model.model_lst = cell(1, num_of_FBA_runs);
@@ -188,10 +188,10 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     init_value_mat(7,:) = sum(glc_bounds)/2;
 
     glc_bds = linspace(-0.223, 0,num_of_met_run);
-    lac_bds = linspace(0, 0.283,num_of_met_run);
+    lac_bds = linspace(0.283,0.283,num_of_met_run);
     gln_bds = linspace(-0.003, 0,num_of_met_run);
     
-
+    delete('data.csv');
     save('init_vals.mat',"init_value_mat");
     i=1;
     if (Simulate_WT == "Y")
@@ -203,7 +203,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                         "M_co2_b[c]"	-500	500	;	% 3 M_co2_b
                         "M_pi_b[c]"	-500	500	;	% 4 M_pi_b
                         "M_h_b[c]"	-500	500	;	% 5 M_h_b
-                        "M_lac_L_b[c]"	-0.283	-0.283;	% 6 M_lac_L_b
+                        "M_lac_L_b[c]"	0.283	0.283;	% 6 M_lac_L_b
                         "M_glc_D_b[c]"	glc_bds(k)	glc_bds(k)	;	% 7 M_glc_D_b
                         "M_gln_L_b[c]"	gln_bds(m)	gln_bds(m);	% 8 M_gln_L_b
                         "M_nh4_b[c]"	-500	500	;	% 9 M_nh4_b
@@ -228,7 +228,8 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                     fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
                     sol_vector = [-1*glc_bds(k),-1*gln_bds(m),lac_sol,solution];
                     if save_data == "Y"
-                        %save('results.mat',"sol_vector")
+                        
+                        %%writematrix(sol_vector,'./data.csv',Delimiter=',',WriteMode='append');
                         writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data.csv',Delimiter=',',WriteMode='append');
                     end
             end
@@ -325,15 +326,15 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
 %         p_lst(i) = p;
 %     end
     
-    [h_lst, p_lst] = fdr_bonferroni(p_lst, 0.01, 74);
-     fileID = fopen([folder_path 'stat_results.txt'], 'w');
-    for i=1:numel(genes)
-        h = h_lst(i);
-        p = p_lst(i);
-         fprintf(fileID, '%s %d p-value:%d \n', genes{i}, h, p);
-    end
-    fclose(fileID);
+%     [h_lst, p_lst] = fdr_bonferroni(p_lst, 0.01, 74);
+%      fileID = fopen([folder_path 'stat_results.txt'], 'w');
+%     for i=1:numel(genes)
+%         h = h_lst(i);
+%         p = p_lst(i);
+%          fprintf(fileID, '%s %d p-value:%d \n', genes{i}, h, p);
+%     end
+%     fclose(fileID);
     
-     save([folder_path 'data.mat'], 'data', 'h_lst', 'p_lst','WT_Model', 'KRAS_Model');
+     %%save([folder_path 'data.mat'], 'data', 'h_lst', 'p_lst','WT_Model', 'KRAS_Model');
      fclose all;
 end

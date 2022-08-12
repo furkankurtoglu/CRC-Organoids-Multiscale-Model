@@ -18,144 +18,146 @@ training_data = data[:splitter]
 test_data = data[splitter:]
 
 
-glu_vals = dataset[:,0]
-glt_vals = dataset[:,2]
-biomass_vals = dataset[:,3]
+# glu_vals = dataset[:,0]
+# glt_vals = dataset[:,1]
+# biomass_vals = dataset[:,3]
 
 
-X, Y = np.meshgrid(glu_vals, glt_vals)
-biomass_vals3d = np.array([biomass_vals,biomass_vals])
+# X, Y = np.meshgrid(glu_vals, glt_vals)
+# biomass_vals3d = np.array([biomass_vals,biomass_vals])
 
-fig = plt.figure(figsize=(12, 12))
-ax = fig.add_subplot(projection='3d')
-ax.scatter(glu_vals, glt_vals, biomass_vals)
-ax.set_xlabel('glucose')
-ax.set_ylabel('glutamine')
-ax.set_zlabel('biomass')
-ax.set_zlim3d(0,0.060)
-plt.show()
-
-
-
-# # split into input (X) and output (y) variables
-# X = training_data[:,0:3]
-# y = training_data[:,3]
-
-
-# # define the keras model
-# model = Sequential()
-# model.add(Dense(4, input_shape=(3,), activation='relu'))
-# model.add(Dense(12, activation='relu'))
-# model.add(Dense(1, activation='relu'))
-# # compile the keras model
-# model.compile(loss='mse', optimizer='adam', metrics=['mae'])
-# # fit the keras model on the dataset
-# history = model.fit(X, y, epochs=150, batch_size=100)
-
-# plt.plot(history.history['mae'],'o',color='black')
-# plt.title('mean absolutue error')
-# plt.ylabel('mea')
-# plt.xlabel('number of epochs')
+# fig = plt.figure(figsize=(12, 12))
+# ax = fig.add_subplot(projection='3d')
+# ax.scatter(glu_vals, glt_vals, biomass_vals)
+# ax.set_xlabel('glucose')
+# ax.set_ylabel('glutamine')
+# ax.set_zlabel('biomass')
+# ax.set_zlim3d(0,0.060)
 # plt.show()
 
 
 
-# #%%
-# x_test_data = test_data[:,0:3]
-# y_test_data = test_data[:,3]
+# split into input (X) and output (y) variables
+X = training_data[:,0:2]
+y = training_data[:,3]
 
 
-# # evaluate the keras model
-# print('EVALUATION')
-# _, accuracy = model.evaluate(x_test_data, y_test_data)
+# define the keras model
+model = Sequential()
+model.add(Dense(4, input_shape=(2,), activation='relu'))
+model.add(Dense(12, activation='relu'))
+model.add(Dense(1, activation='relu'))
+# compile the keras model
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+# fit the keras model on the dataset
+history = model.fit(X, y, epochs=150, batch_size=100)
 
-
-# #%%
-# oxygen_values_500 = []
-# biomass_reals_500 = []
-# biomass_predictions_500 = []
-# for i in range(0,20):
-#     oxygen_value = sorted_data[i,2]
-#     biomass_real = sorted_data[i,3]
-#     biomass_predicted = sol = model.predict([[500., 0 ,oxygen_value]])
-#   #  print(biomass_predicted)
-#     oxygen_values_500.append(oxygen_value)
-#     biomass_reals_500.append(biomass_real)
-#     biomass_predictions_500.append(biomass_predicted[0])
-
-
-# fig = plt.figure()
-# plt.plot(oxygen_values_500,biomass_reals_500,'ko')
-# plt.plot(oxygen_values_500,biomass_predictions_500,'b')
-# plt.xlabel('oxygen lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('Glucose lb = 500')
+plt.plot(history.history['mae'],'o',color='black')
+plt.title('mean absolutue error')
+plt.ylabel('mea')
+plt.xlabel('number of epochs')
+plt.show()
 
 
 
-# oxygen_values_236 = []
-# biomass_reals_236 = []
-# biomass_predictions_236 = []
-# for i in range(4300,4320):
-#     oxygen_value = sorted_data[i,2]
-#     biomass_real = sorted_data[i,3]
-#     biomass_predicted = sol = model.predict([[236.84, 0 ,oxygen_value]])
-#    # print(biomass_predicted)
-#     oxygen_values_236.append(oxygen_value)
-#     biomass_reals_236.append(biomass_real)
-#     biomass_predictions_236.append(biomass_predicted[0])
-
-# fig = plt.figure()
-# plt.plot(oxygen_values_236,biomass_reals_236,'ko')
-# plt.plot(oxygen_values_236,biomass_predictions_236,'b')
-# plt.xlabel('oxygen lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('Glucose lb = 236')
+#%%
+x_test_data = test_data[:,0:2]
+y_test_data = test_data[:,3]
 
 
+# evaluate the keras model
+print('EVALUATION')
+_, accuracy = model.evaluate(x_test_data, y_test_data)
 
 
-# oxygen_values_26 = []
-# biomass_reals_26 = []
-# biomass_predictions_26 = []
-# for i in range(7300,7320):
-#     oxygen_value = sorted_data[i,2]
-#     biomass_real = sorted_data[i,3]
-#     biomass_predicted = sol = model.predict([[26.315, 0 ,oxygen_value]])
-#     #print(biomass_predicted)
-#     oxygen_values_26.append(oxygen_value)
-#     biomass_reals_26.append(biomass_real)
-#     biomass_predictions_26.append(biomass_predicted[0])
+#%% glucose = 0.223 mM/hr
+glutamine_values_0_223 = []
+biomass_reals_0_223 = []
+biomass_predictions_0_223 = []
+for i in range(0,100):
+    glutamine_value = sorted_data[i,1]
+    biomass_real = sorted_data[i,3]
+    biomass_predicted =  model.predict([[0.223, glutamine_value]])
+  #  print(biomass_predicted)
+    glutamine_values_0_223.append(glutamine_value)
+    biomass_reals_0_223.append(biomass_real)
+    biomass_predictions_0_223.append(biomass_predicted[0])
 
-# fig = plt.figure()
-# plt.plot(oxygen_values_26,biomass_reals_26,'ko')
-# plt.plot(oxygen_values_26,biomass_predictions_26,'b')
-# plt.xlabel('oxygen lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('Glucose lb = 26')
-
-
-# oxygen_values_0 = []
-# biomass_reals_0 = []
-# biomass_predictions_0 = []
-# for i in range(7960,7980):
-#     oxygen_value = sorted_data[i,2]
-#     biomass_real = sorted_data[i,3]
-#     biomass_predicted = sol = model.predict([[0, 0 ,oxygen_value]])
-#     #print(biomass_predicted)
-#     oxygen_values_0.append(oxygen_value)
-#     biomass_reals_0.append(biomass_real)
-#     biomass_predictions_0.append(biomass_predicted[0])
-
-# fig = plt.figure()
-# plt.plot(oxygen_values_0,biomass_reals_0,'ko')
-# plt.plot(oxygen_values_0,biomass_predictions_0,'b')
-# plt.xlabel('oxygen lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('Glucose lb = 0')
+fig = plt.figure()
+plt.plot(glutamine_values_0_223,biomass_reals_0_223,'ko')
+plt.plot(glutamine_values_0_223,biomass_reals_0_223,'b')
+plt.xlabel('glutamine lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('Glucose lb = 0.223 mM')
 
 
-# #%%
+# glucose = 0.162181818181818 mM/hr
+glutamine_values_0_162 = []
+biomass_reals_0_162 = []
+biomass_predictions_0_162 = []
+for i in range(2700,2800):
+    glutamine_value = sorted_data[i,1]
+    biomass_real = sorted_data[i,3]
+    biomass_predicted =  model.predict([[0.162181818181818, glutamine_value]])
+  #  print(biomass_predicted)
+    glutamine_values_0_162.append(glutamine_value)
+    biomass_reals_0_162.append(biomass_real)
+    biomass_predictions_0_162.append(biomass_predicted[0])
+
+fig = plt.figure()
+plt.plot(glutamine_values_0_162,biomass_reals_0_162,'ko')
+plt.plot(glutamine_values_0_162,biomass_reals_0_162,'b')
+plt.xlabel('glutamine lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('Glucose lb = 0.162 mM')
+
+
+# glucose = 0.0743333333333333 mM/hr
+glutamine_values_0_074 = []
+biomass_reals_0_074 = []
+biomass_predictions_0_074 = []
+for i in range(6600,6700):
+    glutamine_value = sorted_data[i,1]
+    biomass_real = sorted_data[i,3]
+    biomass_predicted =  model.predict([[0.0743333333333333, glutamine_value]])
+  #  print(biomass_predicted)
+    glutamine_values_0_074.append(glutamine_value)
+    biomass_reals_0_074.append(biomass_real)
+    biomass_predictions_0_074.append(biomass_predicted[0])
+
+fig = plt.figure()
+plt.plot(glutamine_values_0_074,biomass_reals_0_074,'ko')
+plt.plot(glutamine_values_0_074,biomass_reals_0_074,'b')
+plt.xlabel('glutamine lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('Glucose lb = 0.074 mM')
+
+
+# glucose = 0.0 mM/hr
+glutamine_values_0_162 = []
+biomass_reals_0_162 = []
+biomass_predictions_0_162 = []
+for i in range(2700,2800):
+    glutamine_value = sorted_data[i,1]
+    biomass_real = sorted_data[i,3]
+    biomass_predicted =  model.predict([[0.162181818181818, glutamine_value]])
+  #  print(biomass_predicted)
+    glutamine_values_0_162.append(glutamine_value)
+    biomass_reals_0_162.append(biomass_real)
+    biomass_predictions_0_162.append(biomass_predicted[0])
+
+fig = plt.figure()
+plt.plot(glutamine_values_0_162,biomass_reals_0_162,'ko')
+plt.plot(glutamine_values_0_162,biomass_reals_0_162,'b')
+plt.xlabel('glutamine lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('Glucose lb = 0.162 mM')
+
+
+
+
+
+#%%
 
 # oxygen_value_100 = 100;
 # matching_indices = np.where(sorted_data[:,2] == oxygen_value_100)
@@ -277,7 +279,7 @@ plt.show()
 
 
 
-# #%%
-# #save model
-# from keras2cpp import export_model
-# export_model(model, 'Wild_Type.model')
+#%%
+#save model
+from keras2cpp import export_model
+export_model(model, 'Wild_Type.model')
