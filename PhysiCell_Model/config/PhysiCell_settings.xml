@@ -139,9 +139,9 @@
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient> <!--https://www.ncbi.nlm.nih.gov/pubmed/7597991 -->
 				<decay_rate units="1/min">0.0</decay_rate> 
 			</physical_parameter_set>
-			<initial_condition units="molar">16.897255</initial_condition>
+			<initial_condition units="molar">17.5</initial_condition>
 			<Dirichlet_boundary_condition units="molar" enabled="false">0.0</Dirichlet_boundary_condition>
-                <boundary_value ID="ymax" enabled="true">16.897255</boundary_value>
+                <boundary_value ID="ymax" enabled="true">17.5</boundary_value>
 		</variable>		
         
 		<variable name="glutamine" units="mMolar" ID="2">
@@ -149,9 +149,9 @@
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient>
 				<decay_rate units="1/min">0.0</decay_rate> 
 			</physical_parameter_set>
-			<initial_condition units="molar">5.40</initial_condition>
+			<initial_condition units="molar">5.5</initial_condition>
 			<Dirichlet_boundary_condition units="mMolar" enabled="false">0.0</Dirichlet_boundary_condition>
-                <boundary_value ID="ymax" enabled="true">5.40</boundary_value>
+                <boundary_value ID="ymax" enabled="true">5.5</boundary_value>
 		</variable>	        
 		
 		<variable name="lactate" units="mMolar" ID="3">

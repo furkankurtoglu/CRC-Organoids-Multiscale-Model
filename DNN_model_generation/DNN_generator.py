@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # load the dataset
-dataset = loadtxt('WT_in_silico_data.csv', delimiter=',')
+dataset = loadtxt('KRAS_in_silico_data.csv', delimiter=',')
 sorted_data = np.array(dataset)
 data = np.array(dataset)
 np.random.shuffle(data)
@@ -77,7 +77,7 @@ biomass_predictions_0_223 = []
 for i in range(0,100):
     glutamine_value = sorted_data[i,1]
     biomass_real = sorted_data[i,3]
-    biomass_predicted =  model.predict([[0.223, glutamine_value]])
+    biomass_predicted =  model.predict([[0.21, glutamine_value]])
   #  print(biomass_predicted)
     glutamine_values_0_223.append(glutamine_value)
     biomass_reals_0_223.append(biomass_real)
@@ -88,7 +88,7 @@ plt.plot(glutamine_values_0_223,biomass_reals_0_223,'ko')
 plt.plot(glutamine_values_0_223,biomass_reals_0_223,'b')
 plt.xlabel('glutamine lower boundaries')
 plt.ylabel('biomass growth')
-plt.title('Glucose lb = 0.223 mM')
+plt.title('Glucose lb = 0.21 mM')
 
 
 # glucose = 0.162181818181818 mM/hr
@@ -98,7 +98,7 @@ biomass_predictions_0_162 = []
 for i in range(2700,2800):
     glutamine_value = sorted_data[i,1]
     biomass_real = sorted_data[i,3]
-    biomass_predicted =  model.predict([[0.162181818181818, glutamine_value]])
+    biomass_predicted =  model.predict([[0.154848484848485, glutamine_value]])
   #  print(biomass_predicted)
     glutamine_values_0_162.append(glutamine_value)
     biomass_reals_0_162.append(biomass_real)
@@ -109,7 +109,7 @@ plt.plot(glutamine_values_0_162,biomass_reals_0_162,'ko')
 plt.plot(glutamine_values_0_162,biomass_reals_0_162,'b')
 plt.xlabel('glutamine lower boundaries')
 plt.ylabel('biomass growth')
-plt.title('Glucose lb = 0.162 mM')
+plt.title('Glucose lb = 0.155 mM')
 
 
 # glucose = 0.0743333333333333 mM/hr
@@ -119,7 +119,7 @@ biomass_predictions_0_074 = []
 for i in range(6600,6700):
     glutamine_value = sorted_data[i,1]
     biomass_real = sorted_data[i,3]
-    biomass_predicted =  model.predict([[0.0743333333333333, glutamine_value]])
+    biomass_predicted =  model.predict([[0.08484848, glutamine_value]])
   #  print(biomass_predicted)
     glutamine_values_0_074.append(glutamine_value)
     biomass_reals_0_074.append(biomass_real)
@@ -130,28 +130,28 @@ plt.plot(glutamine_values_0_074,biomass_reals_0_074,'ko')
 plt.plot(glutamine_values_0_074,biomass_reals_0_074,'b')
 plt.xlabel('glutamine lower boundaries')
 plt.ylabel('biomass growth')
-plt.title('Glucose lb = 0.074 mM')
+plt.title('Glucose lb = 0.085 mM')
 
 
 # glucose = 0.0 mM/hr
-glutamine_values_0_162 = []
-biomass_reals_0_162 = []
-biomass_predictions_0_162 = []
-for i in range(2700,2800):
+glutamine_values_0 = []
+biomass_reals_0 = []
+biomass_predictions_0 = []
+for i in range(9900,10000):
     glutamine_value = sorted_data[i,1]
     biomass_real = sorted_data[i,3]
-    biomass_predicted =  model.predict([[0.162181818181818, glutamine_value]])
+    biomass_predicted =  model.predict([[0.0, glutamine_value]])
   #  print(biomass_predicted)
-    glutamine_values_0_162.append(glutamine_value)
-    biomass_reals_0_162.append(biomass_real)
-    biomass_predictions_0_162.append(biomass_predicted[0])
+    glutamine_values_0.append(glutamine_value)
+    biomass_reals_0.append(biomass_real)
+    biomass_predictions_0.append(biomass_predicted[0])
 
 fig = plt.figure()
-plt.plot(glutamine_values_0_162,biomass_reals_0_162,'ko')
-plt.plot(glutamine_values_0_162,biomass_reals_0_162,'b')
+plt.plot(glutamine_values_0,biomass_reals_0,'ko')
+plt.plot(glutamine_values_0,biomass_reals_0,'b')
 plt.xlabel('glutamine lower boundaries')
 plt.ylabel('biomass growth')
-plt.title('Glucose lb = 0.162 mM')
+plt.title('Glucose lb = 0.0 mM')
 
 
 
@@ -159,127 +159,126 @@ plt.title('Glucose lb = 0.162 mM')
 
 #%%
 
-# oxygen_value_100 = 100;
-# matching_indices = np.where(sorted_data[:,2] == oxygen_value_100)
+glutamine_value_003 = 0.003;
+matching_indices = np.where(sorted_data[:,1] == glutamine_value_003)
 
-# only_oxygen_100 = sorted_data[matching_indices,:]
-# unique_rows_100 = np.unique(only_oxygen_100, axis=1)
+only_glutamine_003 = sorted_data[matching_indices,:]
+unique_rows_003 = np.unique(only_glutamine_003, axis=1)
 
-# glucose_concentrations = unique_rows_100[0,:,0]
+glucose_concentrations = unique_rows_003[:,0]
 
-# glucose_values_100 = []
-# biomass_reals_100 = []
-# biomass_predictions_ox_100 = []
+glucose_values_003 = []
+biomass_reals_003 = []
+biomass_predictions_gln_003 = []
 
-# for g in range(0,np.size(unique_rows_100[0,:,0])):
-#     glucose_value = unique_rows_100[0,g,0]
-#     biomass_value = unique_rows_100[0,g,3]
-#     biomass_predicted = model.predict([[glucose_value, 0 ,oxygen_value_100]])
-#     glucose_values_100.append(glucose_value)
-#     biomass_reals_100.append(biomass_value)
-#     biomass_predictions_ox_100.append(biomass_predicted[0])
+for g in range(0,np.size(unique_rows_003[0,:,0])):
+    glucose_value = unique_rows_003[0,g,0]
+    biomass_value = unique_rows_003[0,g,3]
+    biomass_predicted = model.predict([[glucose_value,glutamine_value_003]])
+    glucose_values_003.append(glucose_value)
+    biomass_reals_003.append(biomass_value)
+    biomass_predictions_gln_003.append(biomass_predicted[0])
 
-# fig = plt.figure()
-# plt.plot(glucose_concentrations,biomass_reals_100,'ko')
-# plt.plot(glucose_concentrations,biomass_predictions_ox_100,'b')
-# plt.xlabel('glucose lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('oxygen lb = 100')
-
-
-
-
-# oxygen_value_63 = 63.1578947368421;
-# matching_indices = np.where(sorted_data[:,2] == oxygen_value_63)
-
-# only_oxygen_63 = sorted_data[matching_indices,:]
-# unique_rows_63 = np.unique(only_oxygen_63, axis=1)
-
-# glucose_concentrations = unique_rows_63[0,:,0]
-
-# glucose_values_63 = []
-# biomass_reals_63 = []
-# biomass_predictions_ox_63 = []
-
-# for g in range(0,np.size(unique_rows_63[0,:,0])):
-#     glucose_value = unique_rows_63[0,g,0]
-#     biomass_value = unique_rows_63[0,g,3]
-#     biomass_predicted = model.predict([[glucose_value, 0 ,oxygen_value_63]])
-#     glucose_values_63.append(glucose_value)
-#     biomass_reals_63.append(biomass_value)
-#     biomass_predictions_ox_63.append(biomass_predicted[0])
-
-# fig = plt.figure()
-# plt.plot(glucose_concentrations,biomass_reals_63,'ko')
-# plt.plot(glucose_concentrations,biomass_predictions_ox_63,'b')
-# plt.xlabel('glucose lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('oxygen lb = 63')
+fig = plt.figure()
+plt.plot(glucose_values_003,biomass_reals_003,'ko')
+plt.plot(glucose_values_003,biomass_predictions_gln_003,'b')
+plt.xlabel('glucose lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('glutamine = 0.003 mM/hr')
 
 
 
 
-# oxygen_value_26 = 26.3157894736842;
-# matching_indices = np.where(sorted_data[:,2] == oxygen_value_26)
 
-# only_oxygen_26 = sorted_data[matching_indices,:]
-# unique_rows_26 = np.unique(only_oxygen_26, axis=1)
+glutamine_value_002 = 0.002;
+matching_indices = np.where(sorted_data[:,1] == glutamine_value_002)
 
-# glucose_concentrations = unique_rows_26[0,:,0]
+only_glutamine_002 = sorted_data[matching_indices,:]
+unique_rows_002 = np.unique(only_glutamine_002, axis=1)
 
-# glucose_values_26 = []
-# biomass_reals_26 = []
-# biomass_predictions_ox_26 = []
+glucose_concentrations = unique_rows_003[:,0]
 
-# for g in range(0,np.size(unique_rows_63[0,:,0])):
-#     glucose_value = unique_rows_26[0,g,0]
-#     biomass_value = unique_rows_26[0,g,3]
-#     biomass_predicted = model.predict([[glucose_value, 0 ,oxygen_value_26]])
-#     glucose_values_26.append(glucose_value)
-#     biomass_reals_26.append(biomass_value)
-#     biomass_predictions_ox_26.append(biomass_predicted[0])
+glucose_values_002 = []
+biomass_reals_002 = []
+biomass_predictions_gln_002 = []
 
-# fig = plt.figure()
-# plt.plot(glucose_concentrations,biomass_reals_26,'ko')
-# plt.plot(glucose_concentrations,biomass_predictions_ox_26,'b')
-# plt.xlabel('glucose lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('oxygen lb = 26')
+for g in range(0,np.size(unique_rows_002[0,:,0])):
+    glucose_value = unique_rows_002[0,g,0]
+    biomass_value = unique_rows_002[0,g,3]
+    biomass_predicted = model.predict([[glucose_value,glutamine_value_002]])
+    glucose_values_002.append(glucose_value)
+    biomass_reals_002.append(biomass_value)
+    biomass_predictions_gln_002.append(biomass_predicted[0])
 
-
-
-# oxygen_value_0 = -0.;
-# matching_indices = np.where(sorted_data[:,2] == oxygen_value_0)
-
-# only_oxygen_0 = sorted_data[matching_indices,:]
-# unique_rows_0 = np.unique(only_oxygen_0, axis=1)
-
-# glucose_concentrations = unique_rows_0[0,:,0]
-
-# glucose_values_0 = []
-# biomass_reals_0 = []
-# biomass_predictions_ox_0 = []
-
-# for g in range(0,np.size(unique_rows_0[0,:,0])):
-#     glucose_value = unique_rows_0[0,g,0]
-#     biomass_value = unique_rows_0[0,g,3]
-#     biomass_predicted = model.predict([[glucose_value, 0 ,oxygen_value_0]])
-#     glucose_values_0.append(glucose_value)
-#     biomass_reals_0.append(biomass_value)
-#     biomass_predictions_ox_0.append(biomass_predicted[0])
-
-# fig = plt.figure()
-# plt.plot(glucose_concentrations,biomass_reals_0,'ko')
-# plt.plot(glucose_concentrations,biomass_predictions_ox_0,'b')
-# plt.xlabel('glucose lower boundaries')
-# plt.ylabel('biomass growth')
-# plt.title('oxygen lb = 0')
+fig = plt.figure()
+plt.plot(glucose_values_002,biomass_reals_002,'ko')
+plt.plot(glucose_values_002,biomass_predictions_gln_002,'b')
+plt.xlabel('glucose lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('glutamine = 0.002 mM/hr')
 
 
+
+
+glutamine_value_001 = 0.001;
+matching_indices = np.where(sorted_data[:,1] == glutamine_value_001)
+
+only_glutamine_001 = sorted_data[matching_indices,:]
+unique_rows_001 = np.unique(only_glutamine_001, axis=1)
+
+glucose_concentrations = unique_rows_001[:,0]
+
+glucose_values_001 = []
+biomass_reals_001 = []
+biomass_predictions_gln_001 = []
+
+for g in range(0,np.size(unique_rows_001[0,:,0])):
+    glucose_value = unique_rows_001[0,g,0]
+    biomass_value = unique_rows_001[0,g,3]
+    biomass_predicted = model.predict([[glucose_value,glutamine_value_001]])
+    glucose_values_001.append(glucose_value)
+    biomass_reals_001.append(biomass_value)
+    biomass_predictions_gln_001.append(biomass_predicted[0])
+
+fig = plt.figure()
+plt.plot(glucose_values_001,biomass_reals_001,'ko')
+plt.plot(glucose_values_001,biomass_predictions_gln_001,'b')
+plt.xlabel('glucose lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('glutamine = 0.001 mM/hr')
+
+
+
+glutamine_value_000 = 0.000;
+matching_indices = np.where(sorted_data[:,1] == glutamine_value_000)
+
+only_glutamine_000 = sorted_data[matching_indices,:]
+unique_rows_000 = np.unique(only_glutamine_000, axis=1)
+
+glucose_concentrations = unique_rows_000[:,0]
+
+glucose_values_000 = []
+biomass_reals_000 = []
+biomass_predictions_gln_000 = []
+
+for g in range(0,np.size(unique_rows_000[0,:,0])):
+    glucose_value = unique_rows_000[0,g,0]
+    biomass_value = unique_rows_000[0,g,3]
+    biomass_predicted = model.predict([[glucose_value,glutamine_value_000]])
+    glucose_values_000.append(glucose_value)
+    biomass_reals_000.append(biomass_value)
+    biomass_predictions_gln_000.append(biomass_predicted[0])
+
+fig = plt.figure()
+plt.plot(glucose_values_000,biomass_reals_000,'ko')
+plt.plot(glucose_values_000,biomass_predictions_gln_000,'b')
+plt.xlabel('glucose lower boundaries')
+plt.ylabel('biomass growth')
+plt.title('glutamine = 0.0 mM/hr')
 
 
 
 #%%
 #save model
 from keras2cpp import export_model
-export_model(model, 'Wild_Type.model')
+export_model(model, 'KRAS.model')

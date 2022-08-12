@@ -144,8 +144,8 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
         "biomass[c]" 0   500;  % 10 biomass
     };
 
-    Simulate_WT = "Y";
-    Simulate_KRAS = "N";
+    Simulate_WT = "N";
+    Simulate_KRAS = "Y";
 
     %% load experimental data
     met_IDs_wt = fold_change_wt_data{:, 1};
@@ -241,7 +241,9 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
 
 
 
-
+    KRAS_glc_bds = linspace(-0.210, 0,num_of_met_run);
+    KRAS_lac_bds = linspace(0.283,0.283,num_of_met_run);
+    KRAS_gln_bds = linspace(-0.003, 0,num_of_met_run);
 
 
 
@@ -266,7 +268,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     KRAS_Model.initvalue_lst = [];
     i=1;
 
-    KRAS_num_of_met_run = 1; %num_of_met_run;
+    KRAS_num_of_met_run = num_of_met_run;
     if (Simulate_KRAS == "Y")
         for k = 1:KRAS_num_of_met_run
             for m = 1:KRAS_num_of_met_run
@@ -276,13 +278,14 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                     "M_co2_b[c]"	-500	500	;	% 3 M_co2_b
                     "M_pi_b[c]"	-500	500	;	% 4 M_pi_b
                     "M_h_b[c]"	-500	500	;	% 5 M_h_b
-                    "M_lac_L_b[c]"	0	500	;	% 6 M_lac_L_b
-                    "M_glc_D_b[c]"	glc_bds(k)	glc_bds(k)	;	% 7 M_glc_D_b
-                    "M_gln_L_b[c]"	gln_bds(m)	gln_bds(m)	;	% 8 M_gln_L_b
+                    "M_lac_L_b[c]"	0.234	0.234;	% 6 M_lac_L_b
+                    "M_glc_D_b[c]"	KRAS_glc_bds(k)	KRAS_glc_bds(k)	;	% 7 M_glc_D_b
+                    "M_gln_L_b[c]"	KRAS_gln_bds(m)	KRAS_gln_bds(m);	% 8 M_gln_L_b
                     "M_nh4_b[c]"	-500	500	;	% 9 M_nh4_b
                     %"biomass[c]" rate_vals(7) rate_vals(7) ; % growth rate as constraint; baseline
                     "biomass[c]" 0   500;  % 10 biomass
                      };
+                    initvalue = init_value_mat(:, i);
                     [new_Model, stat, sol, v, r, p, q] = upFBA_pipeline_maxBiomass(Model_2, initvalue, met_IDs_kras, foldchange_means_kras, foldchange_sds_kras, SPECIES_BOUND_KRAS);
                     KRAS_Model.model_lst{i} = new_Model;
                     KRAS_Model.stat_lst(i) = stat;
@@ -294,21 +297,22 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                     KRAS_Model.q_lst = [KRAS_Model.q_lst q];  
                     KRAS_Model.initvalue_lst = [KRAS_Model.initvalue_lst initvalue];
                     solution = sol.x(73);
+                    lac_sol = sol.x(68);
                     i=i+1;
-                    fprintf('m = %i\t %i\t %i\t %i\n', k,m,solution)
-                    sol_vector = [-1*glc_bds(k),-1*gln_bds(m),solution];
+                    fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
+                    sol_vector = [-1*KRAS_glc_bds(k),-1*KRAS_gln_bds(m),lac_sol,solution];
                     if save_data == "Y"
-                        writematrix(sol_vector,'KRAS_in_silico_data.csv',Delimiter=',',WriteMode='append');
+                        writematrix(sol_vector,'../DNN_model_generation/KRAS_in_silico_data.csv',Delimiter=',',WriteMode='append');
                     end
             end
         end
     end
     
     
-    total_stat_lst = WT_Model.stat_lst & KRAS_Model.stat_lst;
-    data = [WT_Model.v_lst(:, total_stat_lst)'; KRAS_Model.v_lst(:, total_stat_lst)'];   
-    data = reshape(data, [size(data, 1)/2, size(data, 2)*2]);
-    genes = reactionNames;
+    %total_stat_lst = WT_Model.stat_lst & KRAS_Model.stat_lst;
+    %data = [WT_Model.v_lst(:, total_stat_lst)'; KRAS_Model.v_lst(:, total_stat_lst)'];   
+    %data = reshape(data, [size(data, 1)/2, size(data, 2)*2]);
+    %genes = reactionNames;
 % 
 %     for i=1:numel(genes)
 %         boxplot(data(:, [2*i-1, 2*i]), conditions);
@@ -318,8 +322,8 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
 %          saveas(gcf, [folder_path sprintf('%02d', i) '_' genes{i} '.png']);
 %     end   
 
-    h_lst = zeros(1, numel(genes)); % decisions
-    p_lst = zeros(1, numel(genes)); % p-values    
+   % h_lst = zeros(1, numel(genes)); % decisions
+   % p_lst = zeros(1, numel(genes)); % p-values    
 %     for i=1:numel(genes)
 %         [p, h, stats] = ranksum(data(:, 2*i-1), data(:, 2*i), 'alpha', 0.01);
 %         h_lst(i) = h;
