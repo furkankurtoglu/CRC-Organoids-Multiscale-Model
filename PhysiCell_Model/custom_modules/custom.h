@@ -92,4 +92,4 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt );
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
 std::vector<std::vector<double>> create_cell_circle_positions(double cell_radius, double sphere_radius);
 
-void intracellular_DNN();
+void simulate_DNN();

@@ -131,6 +131,28 @@ int main( int argc, char* argv[] )
 	
 	setup_tissue();
 
+    auto WT_Model = keras2cpp::Model::load("Wild_Type.model");
+    auto KRAS_Model = keras2cpp::Model::load("KRAS.model");
+    keras2cpp::Tensor in{2};
+    keras2cpp::Tensor out;
+    
+    
+    
+    static int glc_index = microenvironment.find_density_index( "glucose" );
+	static int gln_index = microenvironment.find_density_index( "glutamine" );
+    static double exp_ave_n_cells = parameters.doubles("experimental_average_number_of_cells" );
+    static double exp_vol_well = parameters.doubles("experimental_well_volume" );
+    
+
+
+    double intracellular_dt = 6.0;
+    double last_intracellular_time  = 0.0; 
+    double intracellular_dt_tolerance = 0.001 * intracellular_dt; 
+    double next_intracellular_update = intracellular_dt; 
+
+
+
+
 	/* Users typically stop modifying here. END USERMODS */ 
 	
 	// set MultiCellDS save options 
@@ -222,10 +244,91 @@ int main( int argc, char* argv[] )
 			// run PhysiCell 
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
 			
-			/*
-			  Custom add-ons could potentially go here. 
-			*/
-			intracellular_DNN();
+            // simulate DNNs
+			// simulate_DNN();
+            // -----------------------------------------------------------------------------------------------
+            // Furkan : SORRY EVERYONE! I could not write it in nice forms. (Spent more than 5-hr maybe.) So I am putting my code over here :( 
+            if( PhysiCell_globals.current_time >= next_intracellular_update )
+            {
+            
+                #pragma omp parallel for 
+                for( int i=0; i < (*all_cells).size(); i++ )
+                {
+                    // Wild type simulation
+                    if ((*all_cells)[i]->type == 0)
+                    {
+                        keras2cpp::Tensor in{2};
+                        keras2cpp::Tensor out;
+                        double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index];
+                        double gln_val_int = (*all_cells)[i]->nearest_density_vector()[gln_index];
+                        
+                        
+                        double u_glc = (*all_cells)[i]->custom_data[1] * exp_ave_n_cells / exp_vol_well / glc_val_int;
+                        double u_gln = (*all_cells)[i]->custom_data[2] * exp_ave_n_cells / exp_vol_well / gln_val_int;
+                        
+                        float fl_glc = u_glc;
+                        float fl_gln = u_gln;
+                        
+                        //std::cout << "Glucose = " << fl_glc << std::endl;
+                        //std::cout << "Glutamine = " << fl_gln << std::endl;    
+                        
+                        in.data_ = {fl_glc,fl_gln};
+                        out = WT_Model(in); // model evaluation
+                        //out.print();
+                        
+                        std::vector<double> result;
+                        result = out.result_vector();
+                        
+                        double biomass_creation_flux = result[0];
+                        
+                        //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
+                        (*all_cells)[i]->custom_data[0]  = biomass_creation_flux;
+                        double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
+                        
+                        (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
+                        
+                        double cell_pressure = (*all_cells)[i]->state.simple_pressure;
+                        if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
+                        {
+                            if (cell_pressure < 0.8)
+                            {
+                                //std::cout << "Volume is big enough to divide" << std::endl;
+                                (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
+                            }
+                            else
+                            {
+                                (*all_cells)[i]->phenotype.volume.multiply_by_ratio(1/volume_increase_ratio);
+                            }
+                        }
+                        else
+                        {
+                            (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0;
+                        }
+                        
+                        
+                    }
+                    
+                    // KRAS type simulation
+                    if ((*all_cells)[i]->type == 1)
+                    {
+                        
+                        
+                    }
+
+                }
+            
+                next_intracellular_update += intracellular_dt; 
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            // -------------------------------------------------------------------------------------------------
+            
             
 			PhysiCell_globals.current_time += diffusion_dt;
 		}

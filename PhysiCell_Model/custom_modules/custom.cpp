@@ -220,47 +220,33 @@ void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& 
 { return; } 
 
 
-void intracellular_DNN()
+void simulate_DNN()
 {
 	static int glc_index = microenvironment.find_density_index( "glucose" );
-	static int oxy_index = microenvironment.find_density_index( "oxygen" );
-    
+	static int gln_index = microenvironment.find_density_index( "glutamine" );
+    static double exp_ave_n_cells = parameters.doubles("experimental_average_number_of_cells" );
+    static double exp_vol_well = parameters.doubles("experimental_well_volume" );
 	
 	#pragma omp parallel for 
     for( int i=0; i < (*all_cells).size(); i++ )
     {
-        static int biomass_vi = (*all_cells)[i]->custom_data.find_variable_index( "biomass_flux" );
-		double cell_volume = (*all_cells)[i]->phenotype.volume.total;
-		double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index] * 20;
-		double oxy_val_int = (*all_cells)[i]->nearest_density_vector()[oxy_index] * 200;
-
-        float fl_glc = glc_val_int;
-        float fl_oxy = oxy_val_int;
-        //std::cout << "oxygen --> " << fl_oxy << "        " << "glucose --->    " << fl_glc << std::endl;
-/* 		auto model = keras2cpp::Model::load("Wild_Type.model"); //model input
-		keras2cpp::Tensor in{3}; //
-		in.data_ = {fl_glc,0,fl_oxy};
-		keras2cpp::Tensor out = model(in); // model evaluation
-		out.print(); */
-		//keras2cpp::Tensor res = out;
-        std::vector<double> result; // try to escape copying 
-        result = out.result_vector();
-        double biomass_creation_flux = result[0];
-        (*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
-        //std::cout << (*all_cells)[i]->custom_data[biomass_vi] << std::endl;
+        // Wild type simulation
+        if ((*all_cells)[i]->type == 0)
+        {           
+            keras2cpp::Tensor in{2}; //
+            in.data_ = {0.02,0.003};
+            //keras2cpp::Tensor out = WT_Model(in); // model evaluation
+            //out.print();
+        }
         
-        double volume_increase_ratio = 1 + ( biomass_creation_flux / 60) * 0.01;
-        //std::cout << "TOTAL VOLUME OF CELL BEFORE : " << (*all_cells)[i]->phenotype.volume.target_solid_nuclear << std::endl;
-        //(*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
-        //std::cout << "TOTAL VOLUME OF CELL AFTER : " << (*all_cells)[i]->phenotype.volume.target_solid_nuclear << std::endl;
-        if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
+        // KRAS type simulation
+        if ((*all_cells)[i]->type == 1)
         {
-             //std::cout << "Volume is big enough to divide" << std::endl;
-            (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,1) = 9e99;
-            (*all_cells)[i]->phenotype.cycle.data.transition_rate(1,2) = 9e99;
-            (*all_cells)[i]->phenotype.cycle.data.transition_rate(2,3) = 9e99;
-            (*all_cells)[i]->phenotype.cycle.data.transition_rate(3,0) = 9e99;
+            
+            
         }
 	}
 	return;
 }
+
+
