@@ -144,8 +144,8 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
         "biomass[c]" 0   500;  % 10 biomass
     };
 
-    Simulate_WT = "N";
-    Simulate_KRAS = "Y";
+    Simulate_WT = "Y";
+    Simulate_KRAS = "N";
 
     %% load experimental data
     met_IDs_wt = fold_change_wt_data{:, 1};
@@ -157,7 +157,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     
     %% clear all unsteady-state assumptions
     %% perform upFBA ------ Glycolysis, PPP, and TCA cycle
-    num_of_met_run = 100;
+    num_of_met_run = 4;
     num_of_FBA_runs = num_of_met_run*num_of_met_run;
     WT_Model = struct;
     WT_Model.model_lst = cell(1, num_of_FBA_runs);
@@ -174,9 +174,9 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
        %     .* rand(size(init_value_data(:, 1), 1), num_runs);
 
     
-    lac_bounds = [6.4, 19.2];
-    gln_bounds = [0.56, 1.08];
-    glc_bounds = [0.88, 1.56];
+    lac_bounds = [0, 0];
+    gln_bounds = [0.0, 0.0];
+    glc_bounds = [0.0, 0.0];
 
     init_value_mat = zeros(7,num_of_FBA_runs);
     init_value_mat(1,:) = 0;

@@ -289,16 +289,16 @@
 					</substrate> 
 
 					<substrate name="glucose">
-						<secretion_rate units="1/min">0.00371</secretion_rate>
+						<secretion_rate units="1/min">0.0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
-						<uptake_rate units="1/min">0.0</uptake_rate>
+						<uptake_rate units="1/min">0.0371</uptake_rate>
 						<net_export_rate units="total substrate/min">0</net_export_rate> 
 					</substrate> 
 
 					<substrate name="glutamine">
-						<secretion_rate units="1/min">0.00005</secretion_rate>
+						<secretion_rate units="1/min">0.0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
-						<uptake_rate units="1/min">0</uptake_rate>
+						<uptake_rate units="1/min">0.00005</uptake_rate>
 						<net_export_rate units="total substrate/min">0</net_export_rate> 
 					</substrate> 
 
@@ -313,8 +313,10 @@
 			</phenotype>
 			<custom_data>  
                 <biomass_flux type="double" units="1/hr">0.234</biomass_flux>
-                <e_0_glc type="double" units="1/hr">1.3303977e-08</e_0_glc>
-                <e_0_gln type="double" units="1/hr">5.625e-11</e_0_gln>
+                <e_0_glc type="double" units="1/hr">4.344e-11</e_0_glc>
+                <e_0_gln type="double" units="1/hr">1.859e-12</e_0_gln>
+                <fl_glc type="double" units="1/hr">0.0</fl_glc>
+                <fl_gln type="double" units="1/hr">0.0</fl_gln>
 			</custom_data>
 		</cell_definition>	
 	</cell_definitions>
@@ -329,7 +331,7 @@
 	<user_parameters>
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		
-		<tumor_radius type="double" units="micron" description="tumor radius">250</tumor_radius>	
+		<tumor_radius type="double" units="micron" description="tumor radius">150</tumor_radius>	
         <experimental_average_number_of_cells type="double" units="cells">440000</experimental_average_number_of_cells>
         <experimental_well_volume type="double" units="cells">1.5e-3</experimental_well_volume>
         

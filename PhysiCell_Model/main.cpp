@@ -241,8 +241,7 @@ int main( int argc, char* argv[] )
 			// update the microenvironment
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
 			
-			// run PhysiCell 
-			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
+			
 			
             // simulate DNNs
 			// simulate_DNN();
@@ -263,8 +262,8 @@ int main( int argc, char* argv[] )
                         double gln_val_int = (*all_cells)[i]->nearest_density_vector()[gln_index];
                         
                         
-                        double u_glc = (*all_cells)[i]->custom_data[1] * exp_ave_n_cells / exp_vol_well / glc_val_int;
-                        double u_gln = (*all_cells)[i]->custom_data[2] * exp_ave_n_cells / exp_vol_well / gln_val_int;
+                        double u_glc = (*all_cells)[i]->custom_data[1] * exp_ave_n_cells / exp_vol_well * glc_val_int;
+                        double u_gln = (*all_cells)[i]->custom_data[2] * exp_ave_n_cells / exp_vol_well * gln_val_int;
                         
                         float fl_glc = u_glc;
                         float fl_gln = u_gln;
@@ -282,23 +281,29 @@ int main( int argc, char* argv[] )
                         double biomass_creation_flux = result[0];
                         
                         //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
-                        (*all_cells)[i]->custom_data[0]  = biomass_creation_flux;
-                        double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
                         
+                        double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
+                        (*all_cells)[i]->custom_data[0]  = biomass_creation_flux;
+                        (*all_cells)[i]->custom_data[3]  = fl_glc;
+                        (*all_cells)[i]->custom_data[4]  = fl_gln;
                         (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
+                        
+                        (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index]=fl_glc;
+                        (*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index]=fl_gln;
                         
                         double cell_pressure = (*all_cells)[i]->state.simple_pressure;
                         if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
                         {
-                            if (cell_pressure < 0.8)
-                            {
+                            //if (cell_pressure < 0.8)
+                            //{
                                 //std::cout << "Volume is big enough to divide" << std::endl;
-                                (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
-                            }
-                            else
-                            {
-                                (*all_cells)[i]->phenotype.volume.multiply_by_ratio(1/volume_increase_ratio);
-                            }
+                            (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
+                            //(*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio/(*all_cells)[i]->phenotype.volume.total*2494*2);
+                            //}
+                            //else
+                            //{
+                                //(*all_cells)[i]->phenotype.volume.multiply_by_ratio(1/volume_increase_ratio);
+                            //}
                         }
                         else
                         {
@@ -329,6 +334,9 @@ int main( int argc, char* argv[] )
             
             // -------------------------------------------------------------------------------------------------
             
+            
+            // run PhysiCell 
+			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
             
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
