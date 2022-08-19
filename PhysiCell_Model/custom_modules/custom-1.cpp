@@ -69,14 +69,8 @@
 #include "./custom.h"
 #include "../modules/PhysiCell_settings.h"
 
-// assume these files; can override in read_DNN()
-auto WT_Model = keras2cpp::Model::load("Wild_Type.model");
-auto KRAS_Model = keras2cpp::Model::load("KRAS.model");
-
 void create_cell_types( void )
 {
-    read_DNN("Wild_Type.model", "KRAS.model");
-
 	// set the random seed 
 	SeedRandom( parameters.ints("random_seed") );  
 	
@@ -154,11 +148,8 @@ void setup_microenvironment( void )
 
 void setup_tissue( void )
 {
-    // Load in DNN model (just 1 time)
-    // auto WT_Model = keras2cpp::Model::load("Wild_Type.model");
-    // WT_Model = keras2cpp::Model::load("Wild_Type.model");
-
 	// place a cluster of tumor cells at the center 
+	
  
 	double tumor_radius = parameters.doubles( "tumor_radius" ); // 250.0; 
 	
@@ -228,14 +219,10 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt )
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
 { return; } 
 
-void read_DNN(std::string wt_filename, std::string kras_filename)
+void simulate_DNN()
 {
-    WT_Model = keras2cpp::Model::load(wt_filename.c_str());
-    KRAS_Model = keras2cpp::Model::load(kras_filename.c_str());
-}
-
-void simulate_DNN(double intracellular_dt )
-{
+    // auto WT_Model = keras2cpp::Model::load("Wild_Type.model");
+    // auto KRAS_Model = keras2cpp::Model::load("KRAS.model");
     // keras2cpp::Tensor in{2};
     // keras2cpp::Tensor out;
     
@@ -243,7 +230,6 @@ void simulate_DNN(double intracellular_dt )
 	static int gln_index = microenvironment.find_density_index( "glutamine" );
     static double exp_ave_n_cells = parameters.doubles("experimental_average_number_of_cells" );
     static double exp_vol_well = parameters.doubles("experimental_well_volume" );
-
     
     #pragma omp parallel for 
     for( int i=0; i < (*all_cells).size(); i++ )
@@ -251,6 +237,7 @@ void simulate_DNN(double intracellular_dt )
         // Wild type simulation
         if ((*all_cells)[i]->type == 0)
         {
+    auto WT_Model = keras2cpp::Model::load("Wild_Type.model");
             keras2cpp::Tensor in{2};
             keras2cpp::Tensor out;
             double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index];
@@ -289,18 +276,16 @@ void simulate_DNN(double intracellular_dt )
             (*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index]=fl_gln;
             
             double cell_pressure = (*all_cells)[i]->state.simple_pressure;
-
-            //rwh debug
-            // if (PhysiCell_globals.current_time > 1139 && (i==0))
-            // {
-            //     std::cout << "time= " << PhysiCell_globals.current_time << ",  volume (cell 0)= " << (*all_cells)[0]->phenotype.volume.total << std::endl;
-            // }
+            if (PhysiCell_globals.current_time > 1139 && (i==0))
+            {
+                std::cout << "time= " << PhysiCell_globals.current_time << ",  volume (cell 0)= " << (*all_cells)[0]->phenotype.volume.total << std::endl;
+            }
             if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
             {
                 //if (cell_pressure < 0.8)
                 //{
-                    // std::cout << "Volume is big enough to divide" << std::endl;
-                    // std::cout << "i= " << i << ",  volume= " << (*all_cells)[i]->phenotype.volume.total << std::endl;
+                    std::cout << "Volume is big enough to divide" << std::endl;
+                    std::cout << "i= " << i << ",  volume= " << (*all_cells)[i]->phenotype.volume.total << std::endl;
 
                 (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
                 //(*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio/(*all_cells)[i]->phenotype.volume.total*2494*2);
