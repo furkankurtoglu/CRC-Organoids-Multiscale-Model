@@ -154,9 +154,7 @@ void setup_microenvironment( void )
 
 void setup_tissue( void )
 {
-    // Load in DNN model (just 1 time)
-    // auto WT_Model = keras2cpp::Model::load("Wild_Type.model");
-    // WT_Model = keras2cpp::Model::load("Wild_Type.model");
+
 
 	// place a cluster of tumor cells at the center 
  
@@ -197,7 +195,6 @@ std::vector<std::vector<double>> create_cell_circle_positions(double cell_radius
 	double y_spacing= cell_radius*sqrt(3);
 
 	std::vector<double> tempPoint(3,0.0);
-	// std::vector<double> cylinder_center(3,0.0);
 	
 	for(double x=-sphere_radius;x<sphere_radius;x+=x_spacing, xc++)
 	{
@@ -236,8 +233,6 @@ void read_DNN(std::string wt_filename, std::string kras_filename)
 
 void simulate_DNN(double intracellular_dt )
 {
-    // keras2cpp::Tensor in{2};
-    // keras2cpp::Tensor out;
     
     static int glc_index = microenvironment.find_density_index( "glucose" );
 	static int gln_index = microenvironment.find_density_index( "glutamine" );
@@ -263,15 +258,14 @@ void simulate_DNN(double intracellular_dt )
             float fl_glc = u_glc;
             float fl_gln = u_gln;
             
-            // std::cout << "Glucose = " << fl_glc << std::endl;
+            //std::cout << "Glucose = " << glc_val_int << std::endl;
             //std::cout << "Glutamine = " << fl_gln << std::endl;    
             
             in.data_ = {fl_glc,fl_gln};
-            // keras2cpp::Tensor out = WT_Model(in); // model evaluation
             out = WT_Model(in); // model evaluation
             //out.print();
             
-            std::vector<double> result;
+           std::vector<double> result;
             result = out.result_vector();
             // std::vector<double> result = out.result_vector();
             
@@ -280,7 +274,7 @@ void simulate_DNN(double intracellular_dt )
             //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
             
             double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
-            (*all_cells)[i]->custom_data[0]  = biomass_creation_flux;
+            (*all_cells)[i]->custom_data[0]  = biomass_creation_flux; // FURKAN to Fix = Manually written indices for custom data - USE dictionaries !!!!!
             (*all_cells)[i]->custom_data[3]  = fl_glc;
             (*all_cells)[i]->custom_data[4]  = fl_gln;
             (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
@@ -290,65 +284,20 @@ void simulate_DNN(double intracellular_dt )
             
             double cell_pressure = (*all_cells)[i]->state.simple_pressure;
 
-            //rwh debug
-            // if (PhysiCell_globals.current_time > 1139 && (i==0))
-            // {
-            //     std::cout << "time= " << PhysiCell_globals.current_time << ",  volume (cell 0)= " << (*all_cells)[0]->phenotype.volume.total << std::endl;
-            // }
             if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
-            {
-                //if (cell_pressure < 0.8)
-                //{
-                    // std::cout << "Volume is big enough to divide" << std::endl;
-                    // std::cout << "i= " << i << ",  volume= " << (*all_cells)[i]->phenotype.volume.total << std::endl;
-
-                (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
-                //(*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio/(*all_cells)[i]->phenotype.volume.total*2494*2);
-                //}
-                //else
-                //{
-                    //(*all_cells)[i]->phenotype.volume.multiply_by_ratio(1/volume_increase_ratio);
-                //}
-            }
+                {
+                    (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
+                }
             else
-            {
-                (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0;
-            }
+                {
+                    (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0;
+                }
         }
         
-        // KRAS type simulation
+        // KRAS type simulation --- Furkan : I will complete this part when we have rigid road-map
         else if ((*all_cells)[i]->type == 1)
-        {
+        {  
+            
         }
     }
 }
-
-// original
-// void simulate_DNN()
-// {
-// 	static int glc_index = microenvironment.find_density_index( "glucose" );
-// 	static int gln_index = microenvironment.find_density_index( "glutamine" );
-//     static double exp_ave_n_cells = parameters.doubles("experimental_average_number_of_cells" );
-//     static double exp_vol_well = parameters.doubles("experimental_well_volume" );
-	
-// 	#pragma omp parallel for 
-//     for( int i=0; i < (*all_cells).size(); i++ )
-//     {
-//         // Wild type simulation
-//         if ((*all_cells)[i]->type == 0)
-//         {           
-//             keras2cpp::Tensor in{2}; //
-//             in.data_ = {0.02,0.003};
-//             //keras2cpp::Tensor out = WT_Model(in); // model evaluation
-//             //out.print();
-//         }
-        
-//         // KRAS type simulation
-//         if ((*all_cells)[i]->type == 1)
-//         {
-            
-            
-//         }
-// 	}
-// 	return;
-// }

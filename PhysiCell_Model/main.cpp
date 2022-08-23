@@ -118,7 +118,7 @@ int main( int argc, char* argv[] )
 	/* PhysiCell setup */ 
  	
 	// set mechanics voxel size, and match the data structure to BioFVM
-	double mechanics_voxel_size = 30; 
+	double mechanics_voxel_size = 20; 
 	Cell_Container* cell_container = create_cell_container_for_microenvironment( microenvironment, mechanics_voxel_size );
 	
 	/* Users typically start modifying here. START USERMODS */ 
@@ -126,11 +126,10 @@ int main( int argc, char* argv[] )
 	
 	setup_tissue();
 
-
-    double intracellular_dt = 6.0;   // rwh: beware, redefining global name in PhysiCell_constants.cpp
+    double DNN_intracellular_dt = 6.0;
     double last_intracellular_time  = 0.0; 
-    double intracellular_dt_tolerance = 0.001 * intracellular_dt; 
-    double next_intracellular_update = intracellular_dt; 
+    double intracellular_dt_tolerance = 0.001 * DNN_intracellular_dt; 
+    double next_intracellular_update = DNN_intracellular_dt; 
 	/* Users typically stop modifying here. END USERMODS */ 
 	
 	// set MultiCellDS save options 
@@ -221,10 +220,10 @@ int main( int argc, char* argv[] )
 			
             if( PhysiCell_globals.current_time >= next_intracellular_update )
             {
-			    simulate_DNN(intracellular_dt);
-                next_intracellular_update += intracellular_dt; 
+			    simulate_DNN(DNN_intracellular_dt);
+                next_intracellular_update += DNN_intracellular_dt; 
             }
-            // -------------------------------------------------------------------------------------------------
+
             // run PhysiCell 
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
             
