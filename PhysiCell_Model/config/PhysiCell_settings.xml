@@ -124,17 +124,8 @@
 	</options>	
 
 	<microenvironment_setup>
-		<variable name="oxygen" units="mMolar" ID="0">
-			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">108000</diffusion_coefficient>
-				<decay_rate units="1/min">0.0</decay_rate> <!-- 1 for cells  --> 
-			</physical_parameter_set>
-			<initial_condition units="mMolar">0.285</initial_condition>
-			<Dirichlet_boundary_condition units="mMolar" enabled="false">1</Dirichlet_boundary_condition>
-				<boundary_value ID="ymax" enabled="true">0.285</boundary_value>
-		</variable>
 		
-		<variable name="glucose" units="mMolar" ID="1">
+		<variable name="glucose" units="mMolar" ID="0">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient> <!--https://www.ncbi.nlm.nih.gov/pubmed/7597991 -->
 				<decay_rate units="1/min">0.0</decay_rate> 
@@ -144,7 +135,7 @@
                 <boundary_value ID="ymax" enabled="true">17.5</boundary_value>
 		</variable>		
         
-		<variable name="glutamine" units="mMolar" ID="2">
+		<variable name="glutamine" units="mMolar" ID="1">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient>
 				<decay_rate units="1/min">0.0</decay_rate> 
@@ -154,7 +145,7 @@
                 <boundary_value ID="ymax" enabled="true">5.5</boundary_value>
 		</variable>	        
 		
-		<variable name="lactate" units="mMolar" ID="3">
+		<variable name="lactate" units="mMolar" ID="2">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient>
 				<decay_rate units="1/min">0.0</decay_rate> 
@@ -166,7 +157,7 @@
 		
 		<options>
 			<calculate_gradients>false</calculate_gradients>
-			<track_internalized_substrates_in_each_agent>false</track_internalized_substrates_in_each_agent>
+			<track_internalized_substrates_in_each_agent>true</track_internalized_substrates_in_each_agent>
 			<!-- not yet supported --> 
 			<initial_condition type="matlab" enabled="false">
 				<filename>./config/initial.mat</filename>
@@ -179,13 +170,13 @@
 	</microenvironment_setup>
 	
 	<cell_definitions>
-		<cell_definition name="default" ID="0">
+		<cell_definition name="CRC_WT" ID="0">
 			<phenotype>
 				<cycle code="5" name="live">  
 					<!-- using higher than normal significant digits to match divisions in default code -->
-					<transition_rates units="1/min"> 
+					<phase_transition_rates units="1/min"> 
 						<rate start_index="0" end_index="0" fixed_duration="false">0.0</rate>
-					</transition_rates>
+					</phase_transition_rates>
 				</cycle>	
 				
 				<death>  
@@ -281,13 +272,6 @@
 				</motility>
 				
 				<secretion>
-					<substrate name="oxygen">
-						<secretion_rate units="1/min">0.0</secretion_rate>
-						<secretion_target units="substrate density">1</secretion_target>
-						<uptake_rate units="1/min">0.0</uptake_rate>
-						<net_export_rate units="total substrate/min">0</net_export_rate> 
-					</substrate> 
-
 					<substrate name="glucose">
 						<secretion_rate units="1/min">0.0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
@@ -319,6 +303,141 @@
                 <fl_gln type="double" units="1/hr">0.0</fl_gln>
 			</custom_data>
 		</cell_definition>	
+        
+        <cell_definition name="CRC_KRAS" ID="1">
+			<phenotype>
+				<cycle code="5" name="live">  
+					<!-- using higher than normal significant digits to match divisions in default code -->
+					<phase_transition_rates units="1/min"> 
+						<rate start_index="0" end_index="0" fixed_duration="false">0.0</rate>
+					</phase_transition_rates>
+				</cycle>	
+				
+				<death>  
+					<model code="100" name="apoptosis"> 
+						<death_rate units="1/min">0.0</death_rate>
+						<!-- use phase_transition_rates OR phase_durations -->
+						<!--
+						<phase_transition_rates units="1/min">
+							<rate start_index="0" end_index="1" fixed_duration="true">0.00193798</rate>
+						</phase_transition_rates>
+						-->
+						<phase_durations units="min">
+							<duration index="0" fixed_duration="true">0</duration>
+						</phase_durations>
+						<parameters>
+							<unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
+							<lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
+							<cytoplasmic_biomass_change_rate units="1/min">1.66667e-02</cytoplasmic_biomass_change_rate>
+							<nuclear_biomass_change_rate units="1/min">5.83333e-03</nuclear_biomass_change_rate>
+							<calcification_rate units="1/min">0</calcification_rate>
+							<relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+						</parameters>
+					</model> 
+
+					<model code="101" name="necrosis">
+						<death_rate units="1/min">0.0</death_rate>
+						<!-- use phase_transition_rates OR phase_durations -->
+						<!-- necrosis uses phase_duration[0] = 0 so that it always immediately
+							 tries to transition and instead checks volume against the rupture
+							 volume --> 
+<!--						
+						<phase_transition_rates units="1/min">
+							<rate start_index="0" end_index="1" fixed_duration="false">9e9</rate>
+							<rate start_index="1" end_index="2" fixed_duration="true">1.15741e-5</rate>
+						</phase_transition_rates>
+-->						
+						<phase_durations units="min">
+							<duration index="0" fixed_duration="true">0</duration>
+							<duration index="1" fixed_duration="true">0</duration>
+						</phase_durations>
+						
+						<parameters>
+							<unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
+							<lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
+							<cytoplasmic_biomass_change_rate units="1/min">1.66667e-02</cytoplasmic_biomass_change_rate>
+							<nuclear_biomass_change_rate units="1/min">5.83333e-03</nuclear_biomass_change_rate>
+							<calcification_rate units="1/min">0</calcification_rate>
+							<relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+						</parameters>
+					</model> 
+				</death>					
+
+				<volume>  
+					<total units="micron^3">2494</total>
+					<fluid_fraction units="dimensionless">0.75</fluid_fraction>
+					<nuclear units="micron^3">540</nuclear>
+					
+					<fluid_change_rate units="1/min">0.05</fluid_change_rate>
+					<cytoplasmic_biomass_change_rate units="1/min">0.0045</cytoplasmic_biomass_change_rate>
+					<nuclear_biomass_change_rate units="1/min">0.0055</nuclear_biomass_change_rate>
+					
+					<calcified_fraction units="dimensionless">0</calcified_fraction>
+					<calcification_rate units="1/min">0</calcification_rate>
+					
+					<relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+				</volume> 			
+				
+				<mechanics> 
+					<cell_cell_adhesion_strength units="micron/min">0.4</cell_cell_adhesion_strength>
+					<cell_cell_repulsion_strength units="micron/min">10.0</cell_cell_repulsion_strength>
+					<relative_maximum_adhesion_distance units="dimensionless">1.25</relative_maximum_adhesion_distance>
+					
+					<options>
+						<set_relative_equilibrium_distance enabled="false" units="dimensionless">1.8</set_relative_equilibrium_distance>
+						<set_absolute_equilibrium_distance enabled="false" units="micron">15.12</set_absolute_equilibrium_distance>
+					</options>
+				</mechanics>
+				
+				<motility>  
+					<speed units="micron/min">1</speed>
+					<persistence_time units="min">1</persistence_time>
+					<migration_bias units="dimensionless">.5</migration_bias>
+					
+					<options>
+						<enabled>false</enabled>
+						<use_2D>true</use_2D>
+						<chemotaxis>
+							<enabled>false</enabled>
+							<substrate>glucose</substrate>
+							<direction>1</direction>
+						</chemotaxis>
+					</options>
+				</motility>
+				
+				<secretion>
+					<substrate name="glucose">
+						<secretion_rate units="1/min">0.0</secretion_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+						<uptake_rate units="1/min">0.0371</uptake_rate>
+						<net_export_rate units="total substrate/min">0</net_export_rate> 
+					</substrate> 
+
+					<substrate name="glutamine">
+						<secretion_rate units="1/min">0.0</secretion_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+						<uptake_rate units="1/min">0.00005</uptake_rate>
+						<net_export_rate units="total substrate/min">0</net_export_rate> 
+					</substrate> 
+
+					<substrate name="lactate">
+						<secretion_rate units="1/min">0.0047</secretion_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+						<uptake_rate units="1/min">0</uptake_rate>
+						<net_export_rate units="total substrate/min">0</net_export_rate> 
+					</substrate> 
+				</secretion>
+				<molecular />
+			</phenotype>
+			<custom_data>  
+                <biomass_flux type="double" units="1/hr">0.234</biomass_flux>
+                <e_0_glc type="double" units="1/hr">4.344e-11</e_0_glc>
+                <e_0_gln type="double" units="1/hr">1.859e-12</e_0_gln>
+                <fl_glc type="double" units="1/hr">0.0</fl_glc>
+                <fl_gln type="double" units="1/hr">0.0</fl_gln>
+			</custom_data>
+		</cell_definition>
+
 	</cell_definitions>
 	
 	<initial_conditions>
@@ -334,6 +453,10 @@
 		<tumor_radius type="double" units="micron" description="tumor radius">150</tumor_radius>	
         <experimental_average_number_of_cells type="double" units="cells">440000</experimental_average_number_of_cells>
         <experimental_well_volume type="double" units="cells">1.5e-3</experimental_well_volume>
+        <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
+        
+        <random_initial_volume type="bool" unites="dimensionless">true</random_initial_volume>
+        
         
 	</user_parameters>
 	

@@ -12,6 +12,7 @@ function [Model, stat, tmp_sol, v, r, p, q, Right_Mod] = upFBA_pipeline_maxBioma
         tmp_met_ID = split(met_IDs{i}, ";");
         if numel(tmp_met_ID) == 1
             SPECIES_HARD_CONSTRAINT = [SPECIES_HARD_CONSTRAINT; met_IDs(i) tmp1];
+            met_IDs(i);
         else
             SPECIES_COUPLED_CONSTRAINT = [SPECIES_COUPLED_CONSTRAINT; met_IDs(i) tmp1];
         end

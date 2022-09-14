@@ -342,7 +342,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                             end
                             i=i+1;
                            % fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
-                            sol_vector = [-1*KRAS_glc_bds(k),-1*KRAS_gln_bds(l),KRAS_lac_i_bds(m),KRAS_gln_i_bds(n),KRAS_glc_i_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
+                            sol_vector = [-1*KRAS_glc_bds(k),-1*KRAS_gln_bds(l),lac_i_bds(m),KRAS_gln_i_bds(n),KRAS_glc_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
                             if save_data == "Y"
                                 writematrix(sol_vector,'../DNN_model_generation/KRAS_in_silico_data.csv',Delimiter=',',WriteMode='append');
                             end
