@@ -1,5 +1,5 @@
 VERSION := $(shell grep . VERSION.txt | cut -f1 -d:)
-PROGRAM_NAME := u01_keras
+PROGRAM_NAME := CRC_organoid_model
 
 CC := g++
 ifdef PHYSICELL_CPP 

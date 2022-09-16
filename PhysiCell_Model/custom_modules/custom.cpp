@@ -162,43 +162,62 @@ void setup_tissue( void )
  
 	double tumor_radius = parameters.doubles( "tumor_radius" ); // 250.0; 
 	
-	// Parameter<double> temp; 
-	
 	int initial_tumor_radius = parameters.doubles( "tumor_radius" ); 
 	
-	Cell* pCell; 
-	
-    double cell_radius = cell_defaults.phenotype.geometry.radius; 
-	double cell_spacing = 0.8 * 2.0 * cell_radius; 
-	
-	std::vector<std::vector<double>> positions = create_cell_circle_positions(cell_radius,initial_tumor_radius);
-
-	std::cout << "Creating cells" << std::endl;
+    bool Two_Dim_MicEnv =  parameters.bools( "two_dim_seeding" );
     
-    for( int i=0; i < positions.size(); i++ )
+    // std::cout << Two_Dim_MicEnv << std::endl;
+    
+    
+    Cell* pCell; 
+    
+    if ( Two_Dim_MicEnv ):
     {
-        pCell = create_cell(get_cell_definition("CRC_KRAS"));
-        pCell->functions.volume_update_function = NULL;
-        pCell->assign_position( positions[i] );
-         
-        pCell->phenotype.molecular.internalized_total_substrates[glucose_substrate_index] = (1.56+0.88)/2; // FURKAN : Tomorrow I will make these ones stochastic
-        pCell->phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] = (1.08+0.56)/2; // FURKAN : Tomorrow I will make these ones stochastic
-        pCell->phenotype.molecular.internalized_total_substrates[lactate_substrate_index] = (19.2+6.4)/2; // FURKAN : Tomorrow I will make these ones stochastic
+        // 2D Cell Seeding
         
+        double cell_radius = cell_defaults.phenotype.geometry.radius; 
+        double cell_spacing = 0.8 * 2.0 * cell_radius; 
         
-        // Stochastic Volume
-        if (parameters.bools("random_initial_volume"))
+        std::vector<std::vector<double>> positions = create_cell_circle_positions(cell_radius,initial_tumor_radius);
+
+        std::cout << "Creating cells" << std::endl;
+        
+        for( int i=0; i < positions.size(); i++ )
         {
-            double a = uniform_random();
-            if ( a > 0.6)
+            pCell = create_cell(get_cell_definition("CRC_WT"));
+            pCell->functions.volume_update_function = NULL;
+            pCell->assign_position( positions[i] );
+             
+            pCell->phenotype.molecular.internalized_total_substrates[glucose_substrate_index] = (1.56+0.88)/2; // FURKAN : Tomorrow I will make these ones stochastic
+            pCell->phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] = (1.08+0.56)/2; // FURKAN : Tomorrow I will make these ones stochastic
+            pCell->phenotype.molecular.internalized_total_substrates[lactate_substrate_index] = (19.2+6.4)/2; // FURKAN : Tomorrow I will make these ones stochastic
+            
+            
+            // Stochastic Volume
+            if (parameters.bools("random_initial_volume"))
             {
-                pCell->phenotype.volume.multiply_by_ratio(a);
+                double a = uniform_random();
+                if ( a > 0.6)
+                {
+                    pCell->phenotype.volume.multiply_by_ratio(a);
+                }
             }
         }
-	}
+    }
+    else :
+    {
+        // 3D Cell Seeding
+    }
+    
+    
+    
+    
+    
+    
 	
-	// load cells from your CSV file (if enabled)
-	load_cells_from_pugixml(); 		
+	
+
+	
 	
 	return; 
 }
@@ -278,15 +297,16 @@ void simulate_DNN(double intracellular_dt )
             //std::cout << "Glucose = " << glc_val_int << std::endl;
             //std::cout << "Glutamine = " << fl_gln << std::endl;    
             
-            in.data_ = {fl_glc,fl_gln,0.0,0.0,0.0};
+            
+            in.data_ = {0.223,0.003,19.2,1.08,1.56};
             out = WT_Model(in); // model evaluation
-            //out.print();
+            out.print();
             
            std::vector<double> result;
             result = out.result_vector();
             // std::vector<double> result = out.result_vector();
             
-            double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_initializer");
+            double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_normalizer");
             
             //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
             
@@ -329,15 +349,15 @@ void simulate_DNN(double intracellular_dt )
             //std::cout << "Glucose = " << fl_glc << std::endl;
             //std::cout << "Glutamine = " << fl_gln << std::endl;    
             
-            in.data_ = {fl_glc,fl_gln,0.0,0.0,0.0};
+            in.data_ = {0.223,0.003,19.2,1.08,1.56};
             out = KRAS_Model(in); // model evaluation
-            //out.print();
+            out.print();
             
            std::vector<double> result;
             result = out.result_vector();
             // std::vector<double> result = out.result_vector();
             
-            double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_initializer");
+            double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_normalizer");
             
             //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
             
