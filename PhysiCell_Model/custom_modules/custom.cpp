@@ -242,7 +242,6 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 
 void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 { 
-	//pCell->phenotype.secretion.uptake_rates[0]=0.01;
 	return; 
 }
 
@@ -277,6 +276,10 @@ void simulate_DNN(double intracellular_dt )
         // Wild type simulation
         if ((*all_cells)[i]->type == 0)
         {
+            static int i_Glc_i = (*all_cells)[i]->custom_data.find_variable_index( "int_glc" );
+            static int i_Gln_i = (*all_cells)[i]->custom_data.find_variable_index( "int_gln" );
+            static int i_Lac_i = (*all_cells)[i]->custom_data.find_variable_index( "int_lac" );
+            
             keras2cpp::Tensor in{5};
             keras2cpp::Tensor out;
             double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index];
@@ -289,7 +292,7 @@ void simulate_DNN(double intracellular_dt )
             float fl_glc = u_glc;
             float fl_gln = u_gln;
             
-            std::cout << "Glucose = " << fl_glc << std::endl;
+            //std::cout << "Glucose = " << fl_glc << std::endl;
             //std::cout << "Glutamine = " << fl_gln << std::endl;    
 			
 			
@@ -297,13 +300,13 @@ void simulate_DNN(double intracellular_dt )
             double int_conc_gln = (*all_cells)[i]->phenotype.molecular.internalized_total_substrates[gln_index];
             double int_conc_lac = (*all_cells)[i]->phenotype.molecular.internalized_total_substrates[lac_index];
 			
-			float fl_int_conc_glu = int_conc_glu;
-            float fl_int_conc_gln = int_conc_gln;
-			float fl_int_conc_lac = int_conc_lac;
+			float fl_int_conc_glu = (*all_cells)[i]->custom_data[i_Glc_i];
+            float fl_int_conc_gln = (*all_cells)[i]->custom_data[i_Gln_i];
+			float fl_int_conc_lac = (*all_cells)[i]->custom_data[i_Lac_i];
 			
-/* 			std::cout << "Input Intracellular Glucose = " << fl_int_conc_glu << std::endl;
+			/* std::cout << "Input Intracellular Glucose = " << fl_int_conc_glu << std::endl;
 			std::cout << "Input Intracellular Glutamine = " << fl_int_conc_gln << std::endl;    
-			std::cout << "Input Intracellular Lactate = " << fl_int_conc_lac << std::endl;  */   
+			std::cout << "Input Intracellular Lactate = " << fl_int_conc_lac << std::endl;     */
             
             in.data_ = {fl_glc,fl_gln,fl_int_conc_lac,fl_int_conc_glu,fl_int_conc_gln};
             out = WT_Model(in); // model evaluation
@@ -311,9 +314,9 @@ void simulate_DNN(double intracellular_dt )
             
 			std::vector<double> result;
             result = out.result_vector();
-            //std::vector<double> result = out.result_vector();
             
             double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_normalizer");
+            
             /* std::cout << "Biomass = " << biomass_creation_flux << std::endl;
             std::cout << "Intracellular Glucose Change = " << result[1] << std::endl;
 			std::cout << "Intracellular Glutamine Change = " << result[2] << std::endl;
@@ -323,22 +326,25 @@ void simulate_DNN(double intracellular_dt )
             
             double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
             (*all_cells)[i]->custom_data[0]  = biomass_creation_flux; // FURKAN to Fix = Manually written indices for custom data - USE dictionaries !!!!!
-            (*all_cells)[i]->custom_data[3]  = fl_glc;
-            (*all_cells)[i]->custom_data[4]  = fl_gln;
             (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
             
+			// Note to Furkan : UPTAKE RATES!!!!!!!!
+            //(*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index]=0.0;
 			
-			std::cout << "Before = " << (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index] << std::endl;
-			//(*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index]=0.01;
-			std::cout << "After = " << (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index] << std::endl;
-            (*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index]=0.0;
-			
-			
+			double glucose_consumption = result[1]/10; //normalizer
+            double glutamine_consumption = result[2]/10;
+            double lactate_consumption = result[3]/10;
+            
+            (*all_cells)[i]->custom_data[i_Glc_i] -= glucose_consumption;
+            (*all_cells)[i]->custom_data[i_Gln_i] -= glutamine_consumption;
+            (*all_cells)[i]->custom_data[i_Lac_i] -= lactate_consumption;
+
+
             
             double cell_pressure = (*all_cells)[i]->state.simple_pressure;
             if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
                 {
-                    //(*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
+                    (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
                 }
             else
                 {

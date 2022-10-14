@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from keras2cpp import export_model
 
 
-cell_type = 'KRAS'
+cell_type = 'WT'
 train_model = 'Y'
 save_model = 'Y'
 draw_convergence = 'Y'
@@ -57,8 +57,9 @@ biomass_multiplier = 100
 # split into input (X) and output (y) variables
 X = training_data[:,0:5]
 y = training_data[:,5:9]
-y[:,0] *= biomass_multiplier
-y[:,2] *= -1
+multiplier = [100,10,-10,10]
+
+y = y*multiplier
 
 
 
@@ -71,7 +72,7 @@ if (train_model == 'Y'):
     # compile the keras model
     model.compile(loss='mse', optimizer='adam', metrics=['mae'])
     # fit the keras model on the dataset
-    history = model.fit(X, y, epochs=20, batch_size=5)
+    history = model.fit(X, y, epochs=30, batch_size=5)
 
 if (draw_convergence == 'Y'):
     plt.plot(history.history['mae'],'o',color='black')
@@ -85,8 +86,7 @@ if (draw_convergence == 'Y'):
 #%%
 x_test_data = test_data[:,0:5]
 y_test_data = test_data[:,5:9]
-y_test_data[:,0] *= biomass_multiplier
-y_test_data[:,2] *= -1
+y_test_data = y_test_data * multiplier
 # evaluate the keras model
 print('EVALUATION')
 
@@ -270,7 +270,7 @@ if (plot_verification_results == 'Y'):
         lac_ex_predicted = model.predict([[glucose_value,glutamine_value_001,lactate_conc,glucose_conc,gln_value]])
         gln_values_001.append(gln_value)
         lac_ex_reals_001.append(lac_value)
-        lac_ex_gln_c_001.append(lac_ex_predicted[0][3])
+        lac_ex_gln_c_001.append(lac_ex_predicted[0][3]/10)
     
     fig = plt.figure()
     plt.plot(gln_values_001,lac_ex_reals_001,'ko')
@@ -335,7 +335,7 @@ if (plot_verification_results == 'Y'):
         biomass_predicted = model.predict([[glucose_value,glutamine_value_001,lactate_conc,glu_value,glutamine_conc]])
         glu_values_001.append(glu_value)
         biomass_reals_001.append(biomass_value)
-        biomass_predictions_glc_c_001.append(biomass_predicted[0][2])
+        biomass_predictions_glc_c_001.append(biomass_predicted[0][2]/multiplier[-1])
     
     fig = plt.figure()
     plt.plot(glu_values_001,biomass_reals_001,'ko')
@@ -366,7 +366,7 @@ if (plot_verification_results == 'Y'):
         biomass_predicted = model.predict([[glucose_value,glutamine_value_001,lac_value,glucose_conc,glutamine_conc]])
         lac_values_001.append(lac_value)
         biomass_reals_001.append(biomass_value)
-        biomass_predictions_lac_001.append(biomass_predicted[0][3])
+        biomass_predictions_lac_001.append(biomass_predicted[0][3]/multiplier[-1])
     
     fig = plt.figure()
     plt.plot(lac_values_001,biomass_reals_001,'ko')
@@ -383,5 +383,10 @@ if (plot_verification_results == 'Y'):
 #%%
 #save model
 if (save_model == 'Y'):
+    import csv 
     model_name = cell_type + '_DNN' + '.model'
     export_model(model, model_name)
+    
+    with open('multipliers.csv', 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(multiplier)

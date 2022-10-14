@@ -111,7 +111,7 @@ namespace keras2cpp {
         std::partial_sum(
             dims_.rbegin(), dims_.rend(), steps.rbegin(), std::multiplies<>());
 
-        std::vector<double> vect(3, 0);;
+        std::vector<double> vect(4, 0);;
         
         size_t count = 0;
         for (auto&& it : data_) 
@@ -130,6 +130,11 @@ namespace keras2cpp {
                     if ( count == 2 )
                     {
                         vect[2] = static_cast<double>(it);
+                    }
+                    
+                    if ( count == 3 )
+                    {
+                        vect[3] = static_cast<double>(it);
                     }
                     
                     ++count;
