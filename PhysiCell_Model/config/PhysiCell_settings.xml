@@ -157,7 +157,7 @@
 		
 		<options>
 			<calculate_gradients>false</calculate_gradients>
-			<track_internalized_substrates_in_each_agent>true</track_internalized_substrates_in_each_agent>
+			<track_internalized_substrates_in_each_agent>false</track_internalized_substrates_in_each_agent>
 			<!-- not yet supported --> 
 			<initial_condition type="matlab" enabled="false">
 				<filename>./config/initial.mat</filename>
@@ -275,7 +275,7 @@
 					<substrate name="glucose">
 						<secretion_rate units="1/min">0.0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
-						<uptake_rate units="1/min">0.0371</uptake_rate>
+						<uptake_rate units="1/min">0.0371</uptake_rate> <!-- 0.0371 -->
 						<net_export_rate units="total substrate/min">0</net_export_rate> 
 					</substrate> 
 
@@ -301,6 +301,9 @@
                 <e_0_gln type="double" units="1/hr">1.859e-12</e_0_gln>
                 <fl_glc type="double" units="1/hr">0.0</fl_glc>
                 <fl_gln type="double" units="1/hr">0.0</fl_gln>
+				<intra_glucose_ type="double" units="1/hr">0.0</intra_glucose_>
+				<intra_glutamine type="double" units="1/hr">0.0</intra_glutamine>
+				<intra_lactate type="double" units="1/hr">0.0</intra_lactate>
 			</custom_data>
 		</cell_definition>	
         
@@ -435,6 +438,13 @@
                 <e_0_gln type="double" units="1/hr">1.859e-12</e_0_gln>
                 <fl_glc type="double" units="1/hr">0.0</fl_glc>
                 <fl_gln type="double" units="1/hr">0.0</fl_gln>
+				<biomass_result type="double" units="1/hr">0.0</biomass_result>
+				<glucose_result type="double" units="1/hr">0.0</glucose_result>
+				<glutamine_result type="double" units="1/hr">0.0</glutamine_result>
+				<lactate_result type="double" units="1/hr">0.0</lactate_result>
+				<int_glc type="double" units="mM/hr">0.0</int_glc>
+				<int_gln type="double" units="mM/hr">0.0</int_gln>
+				<int_lac type="double" units="mM/hr">0.0</int_lac>
 			</custom_data>
 		</cell_definition>
 
@@ -450,13 +460,13 @@
 	<user_parameters>
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		
-		<tumor_radius type="double" units="micron" description="tumor radius">150</tumor_radius>	
+		<tumor_radius type="double" units="micron" description="tumor radius">10</tumor_radius>	
         <experimental_average_number_of_cells type="double" units="cells">440000</experimental_average_number_of_cells>
         <experimental_well_volume type="double" units="cells">1.5e-3</experimental_well_volume>
         <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
         
         <random_initial_volume type="bool" units="dimensionless">false</random_initial_volume>
-        <two_dim_seeding type="bool" units="dimensionless">false</two_dim_seeding>
+        <two_dim_seeding type="bool" units="dimensionless">true</two_dim_seeding>
         
 	</user_parameters>
 	
