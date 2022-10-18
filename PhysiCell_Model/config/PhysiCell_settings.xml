@@ -99,6 +99,21 @@
 		<dy>32</dy>
 		<dz>32</dz>
 		<use_2D>false</use_2D>
+		
+		
+		<x_min>-256</x_min>
+		<x_max>256</x_max>
+		<y_min>-1440</y_min>
+		<y_max>1440</y_max>
+		<z_min>-1440</z_min>
+		<z_max>1440</z_max>
+		<dx>32</dx>
+		<dy>32</dy>
+		<dz>32</dz>
+		<use_2D>false</use_2D>		
+		
+		
+		
 	</domain>
 	
 	<overall>
@@ -488,6 +503,9 @@
         <two_dim_seeding type="bool" units="dimensionless">false</two_dim_seeding>
         <number_of_organoids type="int" units="none">12</number_of_organoids>
 		<initial_tumor_radius type="double" units="none">46</initial_tumor_radius>
+		
+		<whole_well type="bool" units="dimensionless">true</whole_well>
+		
 		
 	</user_parameters>
 	

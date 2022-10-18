@@ -115,10 +115,85 @@ int main( int argc, char* argv[] )
 	
 	setup_microenvironment(); // modify this in the custom code 
 	
+	bool whole_well =  parameters.bools( "whole_well" );
+	
+	if (whole_well = true)
+	{
+		std::cout << "whole well simulation is active" << std::endl;
+		Microenvironment coarse_well;
+		coarse_well.name = "coarse_well";
+		coarse_well.spatial_units = "micron";
+		coarse_well.mesh.units = "micron";
+		coarse_well.time_units = "min";
+		
+		coarse_well.set_density( 0 , "oxygen", "mM", 108000 , 0.00 );
+		coarse_well.add_density( "glucose", "mM", 30000 , 0.0 );
+		coarse_well.add_density( "chemokine", "mM", 40000 , 0.0);
+		// coarse_well.resize_space( 100, 1 , 1 );
+		
+		double dx = 32;
+		double dy = 2880;
+		double dz = 2880;
+		
+		// coarse_well.resize_space( -dx/2.0+16 , dx/2.0+16, 256.0, 5104.0 , -dz/2.0+16 , dz/2.0+16 , dx, dy, dz );
+		coarse_well.resize_space( 256.0, 5120.0, -1440.0, 1440.0, -1440.0, 1440.0, dx, dy, dz );
+		std::vector<double> dirichlet_condition = { 0 , 0, 0 };
+
+		coarse_well.set_substrate_dirichlet_activation(0,false);
+		coarse_well.set_substrate_dirichlet_activation(1,false);
+		coarse_well.set_substrate_dirichlet_activation(2,false);
+		
+		coarse_well.diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_1D;   
+		
+		int coarse_well_voxel_number = coarse_well.mesh.voxels.size();
+		
+		for ( int m = 0; m < coarse_well_voxel_number ; m++)
+		{
+			coarse_well(m)[0]=17.5; // oxygen
+			coarse_well(m)[1]=5.5; // glucose
+			coarse_well(m)[2]=0; //chemokine
+		}
+		
+		coarse_well.display_information( std::cout );
+		coarse_well.write_to_matlab("output/output00000000_microenvironment1.mat");
+		
+		
+		Microenvironment transfer_region;
+		transfer_region.name = "transfer_region";
+		transfer_region.spatial_units = "micron";
+		transfer_region.mesh.units = "micron";
+		transfer_region.time_units = "min";
+		
+		double tr_dx = 32;
+		double tr_dy = 32;
+		double tr_dz = 32;
+
+		transfer_region.set_density( 0 , "glucose", "mmHg", 30000 , 0.00 );
+		transfer_region.add_density( "glutamine", "mM", 30000 , 0.0 );
+		transfer_region.add_density( "lactate", "mM", 30000 , 0.0);
+		transfer_region.resize_space( 224.0, 288.0, -1440, 1440, -1440, 1440, tr_dx, tr_dy, tr_dz );
+		
+		transfer_region.diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_3D;   
+		
+		for ( int m = 0; m < transfer_region.mesh.voxels.size() ; m++)
+		{
+			transfer_region(m)[0]=17.5; // glucose
+			transfer_region(m)[1]=5.5; // glucose
+			transfer_region(m)[2]=0; //chemokine
+		}
+		
+		transfer_region.display_information( std::cout );
+		transfer_region.write_to_matlab("output/output00000000_microenvironment2.mat");    
+			
+			
+	}
+	
+	
+	
 	/* PhysiCell setup */ 
  	
 	// set mechanics voxel size, and match the data structure to BioFVM
-	double mechanics_voxel_size = 20; 
+	double mechanics_voxel_size = 32; 
 	Cell_Container* cell_container = create_cell_container_for_microenvironment( microenvironment, mechanics_voxel_size );
 	
 	/* Users typically start modifying here. START USERMODS */ 
