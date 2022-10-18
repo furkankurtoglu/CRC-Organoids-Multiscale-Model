@@ -9,7 +9,7 @@ from keras2cpp import export_model
 
 cell_type = 'WT'
 train_model = 'Y'
-save_model = 'Y'
+save_model = 'N'
 draw_convergence = 'Y'
 plot_verification_results = 'Y'
 

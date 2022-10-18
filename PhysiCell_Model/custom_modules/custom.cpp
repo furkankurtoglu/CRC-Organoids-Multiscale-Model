@@ -170,6 +170,8 @@ void setup_tissue( void )
     
     
     Cell* pCell; 
+	
+	
 
     if ( Two_Dim_MicEnv == true )
     {
@@ -205,7 +207,53 @@ void setup_tissue( void )
     }
     else
     {
-        // 3D Cell Seeding
+		double xmin=1.e6;
+		double ymin=1.e6;
+		double zmin=1.e6;
+		double xmax= -xmin;
+		double ymax= -ymin;
+		double zmax= -zmin;
+		
+		double cell_radius = cell_defaults.phenotype.geometry.radius; 
+		// double initial_tumor_radius = 46; // parameters.doubles("initial_tumor_radius");
+		double initial_tumor_radius = parameters.doubles("initial_tumor_radius");
+		std::cout << "------ initial_tumor_radius = " << initial_tumor_radius << std::endl;
+
+		//rwh
+		// double number_of_organoid = 250; //parameters.doubles("number_of_organoid")
+		// int number_of_organoid = 250; // parameters.doubles("number_of_organoid")
+		int number_of_organoids = parameters.ints("number_of_organoids");
+		std::cout << "------ number_of_organoids = " << number_of_organoids << std::endl;		
+		
+        for (int i = 0; i < number_of_organoids; i++) // seeding number of organoid cells specified in PhysiCell_settings.xml
+			    {
+                    std::vector<std::vector<double>> positions = create_cell_sphere_positions(cell_radius,initial_tumor_radius); 
+                    //std::cout << "creating " << positions.size() << " closely-packed organoid cells ... " << std::endl;
+                    // create organoid
+                        double xrand = (rand() % 5333) - 2666;
+                        double yrand = (rand() % 961) - 480;
+                        double zrand = (rand() % 5333) - 2666;
+                        if (xrand < xmin) xmin = xrand;
+                        if (xrand > xmax) xmax = xrand;
+                        if (yrand < ymin) ymin = yrand;
+                        if (yrand > ymax) ymax = yrand;
+                        if (zrand < zmin) zmin = zrand;
+                        if (zrand > zmax) zmax = zrand;
+                    //std::cout << positions.size() << std::endl;
+                    for( int i=0; i < positions.size(); i++ )
+                    {
+                        positions[i][0] += xrand;//(rand() % 5333) - 2666;
+                        positions[i][1] += yrand;//(rand() % 961) - 480;
+                        positions[i][2] += zrand;//(rand() % 5333) - 2666;
+                        // pCell = create_cell(KRAS_negative);
+                        pCell = create_cell( get_cell_definition("CRC_WT") );
+                        pCell->assign_position( positions[i] );
+						
+						pCell->phenotype.molecular.internalized_total_substrates[glucose_substrate_index] = 1.56;//(1.56+0.88)/2; // FURKAN : Tomorrow I will make these ones stochastic
+						pCell->phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] = 1.08;//(1.08+0.56)/2; // FURKAN : Tomorrow I will make these ones stochastic
+						pCell->phenotype.molecular.internalized_total_substrates[lactate_substrate_index] = 19.2;//(19.2+6.4)/2; // FURKAN : Tomorrow I will make these ones stochastic
+                    }
+			    }
     }
     
 	
@@ -236,6 +284,35 @@ std::vector<std::vector<double>> create_cell_circle_positions(double cell_radius
 	return cells;
 }
 
+
+std::vector<std::vector<double>> create_cell_sphere_positions(double cell_radius, double sphere_radius)
+{
+	std::vector<std::vector<double>> cells;
+	int xc=0,yc=0,zc=0;
+	double x_spacing= cell_radius*sqrt(3);
+	double y_spacing= cell_radius*2;
+	double z_spacing= cell_radius*sqrt(3);
+	
+	std::vector<double> tempPoint(3,0.0);
+	
+	for(double z=-sphere_radius;z<sphere_radius;z+=z_spacing, zc++)
+	{
+		for(double x=-sphere_radius;x<sphere_radius;x+=x_spacing, xc++)
+		{
+			for(double y=-sphere_radius;y<sphere_radius;y+=y_spacing, yc++)
+			{
+				tempPoint[0]=x + (zc%2) * 0.5 * cell_radius;
+				tempPoint[1]=y + (xc%2) * cell_radius;
+				tempPoint[2]=z;
+				
+				if(sqrt(norm_squared(tempPoint))< sphere_radius)
+				{ cells.push_back(tempPoint); }
+			}
+			
+		}
+	}
+	return cells;
+}
 
 std::vector<std::string> my_coloring_function( Cell* pCell )
 { return paint_by_number_cell_coloring(pCell); }
@@ -308,7 +385,10 @@ void simulate_DNN(double intracellular_dt )
 			std::cout << "Input Intracellular Glutamine = " << fl_int_conc_gln << std::endl;    
 			std::cout << "Input Intracellular Lactate = " << fl_int_conc_lac << std::endl;     */
             
+			
+			
             in.data_ = {fl_glc,fl_gln,fl_int_conc_lac,fl_int_conc_glu,fl_int_conc_gln};
+			//in.data_ = {0.1115,0.0025,9.6,0.54,0.39}; test values
             out = WT_Model(in); // model evaluation
             //out.print();
             
@@ -317,10 +397,10 @@ void simulate_DNN(double intracellular_dt )
             
             double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_normalizer");
             
-            /* std::cout << "Biomass = " << biomass_creation_flux << std::endl;
-            std::cout << "Intracellular Glucose Change = " << result[1] << std::endl;
-			std::cout << "Intracellular Glutamine Change = " << result[2] << std::endl;
-			std::cout << "Intracellular Lactate Change = " << result[3] << std::endl; */
+/*             std::cout << "Biomass = " << biomass_creation_flux << std::endl;
+            std::cout << "Intracellular Glucose Change = " << result[1]/10 << std::endl;
+			std::cout << "Intracellular Glutamine Change = " << result[2]/10 << std::endl;
+			std::cout << "Intracellular Lactate Change = " << result[3]/10 << std::endl; */
             
             //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
             
@@ -331,13 +411,42 @@ void simulate_DNN(double intracellular_dt )
 			// Note to Furkan : UPTAKE RATES!!!!!!!!
             //(*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index]=0.0;
 			
-			double glucose_consumption = result[1]/10; //normalizer
-            double glutamine_consumption = result[2]/10;
-            double lactate_consumption = result[3]/10;
-            
-            (*all_cells)[i]->custom_data[i_Glc_i] -= glucose_consumption;
-            (*all_cells)[i]->custom_data[i_Gln_i] -= glutamine_consumption;
-            (*all_cells)[i]->custom_data[i_Lac_i] -= lactate_consumption;
+			double glucose_consumption = result[1]/10/60  * intracellular_dt; //DNN multipliers
+            double glutamine_consumption = result[2]/10/60 * intracellular_dt;
+            double lactate_consumption = result[3]/10/60 * intracellular_dt;
+			
+			
+/* 			std::cout << "Biomass = " << biomass_creation_flux << std::endl;
+            std::cout << "Intracellular Glucose Change = " << result[1]/10 << std::endl;
+			std::cout << "Intracellular Glutamine Change = " << result[2]/10 << std::endl;
+			std::cout << "Intracellular Lactate Change = " << result[3]/10 << std::endl; */
+			
+			
+			//std::cout << "Before : "  << (*all_cells)[i]->custom_data[i_Lac_i] <<std::endl;
+            (*all_cells)[i]->custom_data[i_Glc_i] = (*all_cells)[i]->custom_data[i_Glc_i]-glucose_consumption;
+            (*all_cells)[i]->custom_data[i_Gln_i] = (*all_cells)[i]->custom_data[i_Gln_i]-glutamine_consumption;
+            (*all_cells)[i]->custom_data[i_Lac_i] = (*all_cells)[i]->custom_data[i_Lac_i]-lactate_consumption;
+			//std::cout << "After : "  << (*all_cells)[i]->custom_data[i_Lac_i] <<std::endl;
+
+			if ((*all_cells)[i]->custom_data[i_Glc_i] < 0)
+			{
+				(*all_cells)[i]->custom_data[i_Glc_i] = 0.0;
+			}
+						
+			if ((*all_cells)[i]->custom_data[i_Gln_i] < 0)
+			{
+				(*all_cells)[i]->custom_data[i_Gln_i] = 0.0;
+			}
+
+			if ((*all_cells)[i]->custom_data[i_Lac_i] < 0)
+			{
+				(*all_cells)[i]->custom_data[i_Lac_i] = 0.0;
+			}
+/* 
+			std::cout << "Biomass Result = " << biomass_creation_flux << std::endl;
+            std::cout << "Intracellular Glucose Concentration = " << (*all_cells)[i]->custom_data[i_Glc_i] << std::endl;
+			std::cout << "Intracellular Glutamine Concentration = " << (*all_cells)[i]->custom_data[i_Gln_i] << std::endl;
+			std::cout << "Intracellular Lactate Concentration = " << (*all_cells)[i]->custom_data[i_Lac_i] << std::endl; */
 
 
             

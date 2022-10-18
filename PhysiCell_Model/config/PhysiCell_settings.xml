@@ -74,7 +74,8 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-750</x_min>
+		
+<!-- 		<x_min>-750</x_min>
 		<x_max>750</x_max>
 		<y_min>-750</y_min>
 		<y_max>750</y_max>
@@ -83,11 +84,25 @@
 		<dx>20</dx>
 		<dy>20</dy>
 		<dz>20</dz>
-		<use_2D>true</use_2D>
+		<use_2D>true</use_2D> -->
+		
+		
+		
+
+		<x_min>-2880</x_min>
+		<x_max>2880</x_max>
+		<y_min>-512</y_min>
+		<y_max>512</y_max>
+		<z_min>-2880</z_min>
+		<z_max>2880</z_max>
+		<dx>32</dx>
+		<dy>32</dy>
+		<dz>32</dz>
+		<use_2D>false</use_2D>
 	</domain>
 	
 	<overall>
-		<max_time units="min">432000</max_time> <!-- 2 days * 24 h * 60 min -->
+		<max_time units="min">4320</max_time> <!-- 1 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -131,7 +146,7 @@
 				<decay_rate units="1/min">0.0</decay_rate> 
 			</physical_parameter_set>
 			<initial_condition units="molar">17.5</initial_condition>
-			<Dirichlet_boundary_condition units="molar" enabled="false">0.0</Dirichlet_boundary_condition>
+			<Dirichlet_boundary_condition units="molar" enabled="false">17.5</Dirichlet_boundary_condition>
                 <boundary_value ID="ymax" enabled="true">17.5</boundary_value>
 		</variable>		
         
@@ -141,7 +156,7 @@
 				<decay_rate units="1/min">0.0</decay_rate> 
 			</physical_parameter_set>
 			<initial_condition units="molar">5.5</initial_condition>
-			<Dirichlet_boundary_condition units="mMolar" enabled="false">0.0</Dirichlet_boundary_condition>
+			<Dirichlet_boundary_condition units="mMolar" enabled="false">5.5</Dirichlet_boundary_condition>
                 <boundary_value ID="ymax" enabled="true">5.5</boundary_value>
 		</variable>	        
 		
@@ -470,8 +485,10 @@
         <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
         
         <random_initial_volume type="bool" units="dimensionless">true</random_initial_volume>
-        <two_dim_seeding type="bool" units="dimensionless">true</two_dim_seeding>
-        
+        <two_dim_seeding type="bool" units="dimensionless">false</two_dim_seeding>
+        <number_of_organoids type="int" units="none">12</number_of_organoids>
+		<initial_tumor_radius type="double" units="none">46</initial_tumor_radius>
+		
 	</user_parameters>
 	
 </PhysiCell_settings>
