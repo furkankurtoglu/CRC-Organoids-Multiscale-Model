@@ -89,7 +89,7 @@
 		
 		
 
-		<x_min>-2880</x_min>
+<!-- 		<x_min>-2880</x_min>
 		<x_max>2880</x_max>
 		<y_min>-512</y_min>
 		<y_max>512</y_max>
@@ -98,7 +98,7 @@
 		<dx>32</dx>
 		<dy>32</dy>
 		<dz>32</dz>
-		<use_2D>false</use_2D>
+		<use_2D>false</use_2D> -->
 		
 		
 		<x_min>-256</x_min>
@@ -501,11 +501,11 @@
         
         <random_initial_volume type="bool" units="dimensionless">true</random_initial_volume>
         <two_dim_seeding type="bool" units="dimensionless">false</two_dim_seeding>
-        <number_of_organoids type="int" units="none">12</number_of_organoids>
-		<initial_tumor_radius type="double" units="none">46</initial_tumor_radius>
+        <number_of_organoids type="int" units="none">250</number_of_organoids>
+		<initial_tumor_radius type="double" units="none">45</initial_tumor_radius>
 		
-		<whole_well type="bool" units="dimensionless">true</whole_well>
-		
+		<whole_well_simulation type="bool" units="dimensionless">true</whole_well_simulation>
+		<intracellular_simulation type="bool" units="dimensionless">false</intracellular_simulation>
 		
 	</user_parameters>
 	
