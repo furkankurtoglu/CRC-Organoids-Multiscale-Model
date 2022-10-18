@@ -154,6 +154,8 @@ void setup_microenvironment( void )
 
 void setup_tissue( void )
 {
+	
+	//std::cout << "entering setup tissue is done" << std::endl;
     static int glucose_substrate_index = microenvironment.find_density_index( "glucose" );
     static int glutamine_substrate_index = microenvironment.find_density_index( "glutamine" ); 
     static int lactate_substrate_index = microenvironment.find_density_index( "lactate");
@@ -162,7 +164,7 @@ void setup_tissue( void )
  
 	double tumor_radius = parameters.doubles( "tumor_radius" ); // 250.0; 
 	
-	int initial_tumor_radius = parameters.doubles( "tumor_radius" ); 
+	double initial_tumor_radius = 10;//.parameters.doubles( "tumor_radius" ); 
 	
     bool Two_Dim_MicEnv =  parameters.bools( "two_dim_seeding" );
     
@@ -207,9 +209,9 @@ void setup_tissue( void )
     }
     else
     {
-		double xmin=1.e6;
-		double ymin=1.e6;
-		double zmin=1.e6;
+		double xmin=512;
+		double ymin=2880;
+		double zmin=2880;
 		double xmax= -xmin;
 		double ymax= -ymin;
 		double zmax= -zmin;
@@ -230,9 +232,10 @@ void setup_tissue( void )
                     std::vector<std::vector<double>> positions = create_cell_sphere_positions(cell_radius,initial_tumor_radius); 
                     //std::cout << "creating " << positions.size() << " closely-packed organoid cells ... " << std::endl;
                     // create organoid
-                        double xrand = (rand() % 5333) - 2666;
-                        double yrand = (rand() % 961) - 480;
-                        double zrand = (rand() % 5333) - 2666;
+								std::cout << rand() << std::endl;
+                        double xrand = (rand() % 512) - 256;
+                        double yrand = (rand() % 2880) - 1440;
+                        double zrand = (rand() % 2880) - 1440;
                         if (xrand < xmin) xmin = xrand;
                         if (xrand > xmax) xmax = xrand;
                         if (yrand < ymin) ymin = yrand;
@@ -242,10 +245,9 @@ void setup_tissue( void )
                     //std::cout << positions.size() << std::endl;
                     for( int i=0; i < positions.size(); i++ )
                     {
-                        positions[i][0] += xrand;//(rand() % 5333) - 2666;
-                        positions[i][1] += yrand;//(rand() % 961) - 480;
-                        positions[i][2] += zrand;//(rand() % 5333) - 2666;
-                        // pCell = create_cell(KRAS_negative);
+                        positions[i][0] += 0; //xrand;//(rand() % 5333) - 2666;
+                        positions[i][1] += 0;//yrand;//(rand() % 961) - 480;
+                        positions[i][2] += 0;//zrand;//(rand() % 5333) - 2666;
                         pCell = create_cell( get_cell_definition("CRC_WT") );
                         pCell->assign_position( positions[i] );
 						
@@ -356,6 +358,7 @@ void simulate_DNN(double intracellular_dt )
             static int i_Glc_i = (*all_cells)[i]->custom_data.find_variable_index( "int_glc" );
             static int i_Gln_i = (*all_cells)[i]->custom_data.find_variable_index( "int_gln" );
             static int i_Lac_i = (*all_cells)[i]->custom_data.find_variable_index( "int_lac" );
+			static int biomass_result = (*all_cells)[i]->custom_data.find_variable_index( "biomass_flux" );
             
             keras2cpp::Tensor in{5};
             keras2cpp::Tensor out;
@@ -385,8 +388,6 @@ void simulate_DNN(double intracellular_dt )
 			std::cout << "Input Intracellular Glutamine = " << fl_int_conc_gln << std::endl;    
 			std::cout << "Input Intracellular Lactate = " << fl_int_conc_lac << std::endl;     */
             
-			
-			
             in.data_ = {fl_glc,fl_gln,fl_int_conc_lac,fl_int_conc_glu,fl_int_conc_gln};
 			//in.data_ = {0.1115,0.0025,9.6,0.54,0.39}; test values
             out = WT_Model(in); // model evaluation
@@ -405,7 +406,7 @@ void simulate_DNN(double intracellular_dt )
             //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
             
             double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
-            (*all_cells)[i]->custom_data[0]  = biomass_creation_flux; // FURKAN to Fix = Manually written indices for custom data - USE dictionaries !!!!!
+            (*all_cells)[i]->custom_data[biomass_result]  = biomass_creation_flux; // FURKAN to Fix = Manually written indices for custom data - USE dictionaries !!!!!
             (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
             
 			// Note to Furkan : UPTAKE RATES!!!!!!!!

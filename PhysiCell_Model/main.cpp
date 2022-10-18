@@ -114,6 +114,8 @@ int main( int argc, char* argv[] )
 	/* Microenvironment setup */ 
 	
 	setup_microenvironment(); // modify this in the custom code 
+	std::cout << "setup microvironment is done" << std::endl;
+	
 	
 	bool whole_well =  parameters.bools( "whole_well_simulation" );
 	bool intracellular_simulation = parameters.bools( "intracellular_simulation" );
@@ -147,6 +149,7 @@ int main( int argc, char* argv[] )
 		
 		coarse_well.diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_1D;   
 		
+
 		int coarse_well_voxel_number = coarse_well.mesh.voxels.size();
 		
 		for ( int m = 0; m < coarse_well_voxel_number ; m++)
@@ -155,7 +158,7 @@ int main( int argc, char* argv[] )
 			coarse_well(m)[1]=5.5; // glucose
 			coarse_well(m)[2]=0; //chemokine
 		}
-		
+
 		coarse_well.display_information( std::cout );
 		coarse_well.write_to_matlab("output/output00000000_microenvironment1.mat");
 		
@@ -188,7 +191,7 @@ int main( int argc, char* argv[] )
 			
 			
 	}
-	
+	std::cout << "whole well is created" << std::endl;
 	
 	
 	/* PhysiCell setup */ 
@@ -199,8 +202,11 @@ int main( int argc, char* argv[] )
 	
 	/* Users typically start modifying here. START USERMODS */ 
 	create_cell_types();
+	std::cout << "create cell types is done" << std::endl;
 	
 	setup_tissue();
+
+	std::cout << "setup tissue is done" << std::endl;
 
     double DNN_intracellular_dt = 6.0;
     double last_intracellular_time  = 0.0; 
@@ -305,6 +311,7 @@ int main( int argc, char* argv[] )
 			
 			if (whole_well = true)
 			{
+				
 				coarse_well.simulate_diffusion_decay(diffusion_dt);
             
             
@@ -434,6 +441,7 @@ int main( int argc, char* argv[] )
 			{		
 				if( PhysiCell_globals.current_time >= next_intracellular_update )
 				{
+					//std::cout << "Entering intracellular" << std::endl;
 					simulate_DNN(DNN_intracellular_dt);
 					next_intracellular_update += DNN_intracellular_dt; 
 				}
