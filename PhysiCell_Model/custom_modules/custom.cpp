@@ -449,19 +449,21 @@ void simulate_DNN(double intracellular_dt )
 			std::cout << "Intracellular Glutamine Concentration = " << (*all_cells)[i]->custom_data[i_Gln_i] << std::endl;
 			std::cout << "Intracellular Lactate Concentration = " << (*all_cells)[i]->custom_data[i_Lac_i] << std::endl; */
 
+			double cell_pressure = (*all_cells)[i]->state.simple_pressure;
 
-            
-            double cell_pressure = (*all_cells)[i]->state.simple_pressure;
-            if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
-                {
-                    (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
-                }
-            else
-                {
-                    (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0;
-                }
+			if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
+				{
+					if (cell_pressure < 1.1)
+					{
+						(*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
+					}
+				}
+			else
+				{
+					(*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0;
+				}
+			
         }
-        
         /* // KRAS type simulation
         else if ((*all_cells)[i]->type == 1)
         {  

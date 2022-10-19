@@ -113,7 +113,7 @@ if Temporospatial_Plotting == 'Y':
         fig, axs = plt.subplots()
         
         # color bar
-        tp = "output00000072"
+        tp = "output00000056"
         ft, ct, tt = data_parser(tp)
         fine_X, fine_Y, fine_oxy = ft[0]
         cX, cY, cOxy, cGlu, cChem = ct
@@ -160,7 +160,7 @@ if Temporospatial_Plotting == 'Y':
         fig2, ax = plt.subplots()
         
         # color bar
-        tp = "output00000072"
+        tp = "output00000056"
         ft, ct, tt = data_parser(tp)
         fine_X, fine_Y, fine_glu = ft[1]
         cX, cY, cOxy, cGlu, cChem = ct
@@ -207,7 +207,7 @@ if Temporospatial_Plotting == 'Y':
         fig3, ax3 = plt.subplots()
         
         # color bar
-        tp = "output00000072"
+        tp = "output00000056"
         ft, ct, tt = data_parser(tp)
         fine_X, fine_Y, fine_chem = ft[2]
         cX, cY, cOxy, cGlu, cChem = ct
