@@ -74,9 +74,9 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-256</x_min>
-		<x_max>256</x_max>
-		<y_min>-1440</y_min>
+		<x_min>-256</x_min> <!-- (-256) -->
+		<x_max>5120</x_max> <!-- (256) -->
+		<y_min>-1440</y_min> 
 		<y_max>1440</y_max>
 		<z_min>-1440</z_min>
 		<z_max>1440</z_max>
@@ -97,7 +97,7 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>1</omp_num_threads>
+		<omp_num_threads>10</omp_num_threads>
 	</parallel> 
 	
 	<save>
@@ -129,8 +129,8 @@
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient>
 				<decay_rate units="1/min">0.0</decay_rate> 
 			</physical_parameter_set>
-			<initial_condition units="mMolar">0.0</initial_condition> <!-- .285 -->
-			<Dirichlet_boundary_condition units="mMolar" enabled="false">0.0</Dirichlet_boundary_condition> <!-- .285 -->
+			<initial_condition units="mMolar">17.5</initial_condition> <!--  -->
+			<Dirichlet_boundary_condition units="mMolar" enabled="false">0.0</Dirichlet_boundary_condition> <!-- -->
                 <boundary_value ID="ymax" enabled="false">0.0</boundary_value>
 		</variable>
 		
@@ -139,7 +139,7 @@
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient> <!--https://www.ncbi.nlm.nih.gov/pubmed/7597991 -->
 				<decay_rate units="1/min">0.0</decay_rate> 
 			</physical_parameter_set>
-			<initial_condition units="molar">0.0</initial_condition> <!-- 16.897255 -->
+			<initial_condition units="molar">5.5</initial_condition> <!-- 16.897255 -->
 			<Dirichlet_boundary_condition units="molar" enabled="false">0.0</Dirichlet_boundary_condition>
 		</variable>
         
@@ -300,7 +300,7 @@
 		<fibroblast_seeding type="bool" units="none">false</fibroblast_seeding>
 		<organoid_cell_seeding type="bool" units="none">false</organoid_cell_seeding>
 		<number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1</number_of_cells> <!-- 170278 -->
-
+        <ground_truth_simulation type="bool" units="none">false</ground_truth_simulation>
 	</user_parameters>
 	
 </PhysiCell_settings>

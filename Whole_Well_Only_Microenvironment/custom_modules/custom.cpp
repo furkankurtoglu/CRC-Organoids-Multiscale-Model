@@ -128,7 +128,22 @@ void setup_microenvironment( void )
 	
 	// initialize BioFVM 
 	
-	initialize_microenvironment(); 	
+	initialize_microenvironment(); 
+
+    int microenvironment_voxel_number = microenvironment.mesh.voxels.size();
+
+
+    for ( int m = 0; m < microenvironment_voxel_number ; m++)
+    {
+        
+        //std::cout << microenvironment.mesh.voxels[m].center[0] << std::endl;
+        if ( microenvironment.mesh.voxels[m].center[0] < 257 )
+        {    
+            microenvironment(m)[0]=0; // glucose
+            microenvironment(m)[1]=0; // glutamine
+            microenvironment(m)[2]=16.0; //lactate
+        }   
+    }	
 	
 	return; 
 }
