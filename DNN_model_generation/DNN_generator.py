@@ -72,7 +72,7 @@ if (train_model == 'Y'):
     # compile the keras model
     model.compile(loss='mse', optimizer='adam', metrics=['mae'])
     # fit the keras model on the dataset
-    history = model.fit(X, y, epochs=30, batch_size=5)
+    history = model.fit(X, y, epochs=20, batch_size=5)
 
 if (draw_convergence == 'Y'):
     plt.plot(history.history['mae'],'o',color='black')
@@ -144,6 +144,12 @@ if (plot_verification_results == 'Y'):
         biomass_predictions_gln_001.append(biomass_predicted[0][0]/biomass_multiplier)
     
     fig = plt.figure()
+   
+    corr_matrix1 = np.corrcoef(biomass_reals_001,biomass_predictions_gln_001)
+    corr1 = corr_matrix1[0,1]
+    R_sq1 = corr1**2
+    textstr = "R^2 = " + str(R_sq1)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
     plt.plot(glutamine_values_001,biomass_reals_001,'ko')
     plt.plot(glutamine_values_001,biomass_predictions_gln_001,'r')
     plt.xlabel('glucose uptake rate (mM/hr)')
@@ -174,6 +180,12 @@ if (plot_verification_results == 'Y'):
         biomass_predictions_gln_001.append(biomass_predicted[0][0]/biomass_multiplier)
     
     fig = plt.figure()
+    corr_matrix2 = np.corrcoef(biomass_reals_001,biomass_predictions_gln_001)
+    corr2 = corr_matrix2[0,1]
+    R_sq2 = corr2**2
+    textstr = "R^2 = " + str(R_sq2)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
+
     plt.plot(glutamine_values_001,biomass_reals_001,'ko')
     plt.plot(glutamine_values_001,biomass_predictions_gln_001,'r')
     plt.xlabel('glutamine uptake rate (mM/hr)')
@@ -207,6 +219,12 @@ if (plot_verification_results == 'Y'):
         biomass_predictions_lac_001.append(biomass_predicted[0][0]/biomass_multiplier)
     
     fig = plt.figure()
+    corr_matrix3 = np.corrcoef(biomass_reals_001,biomass_predictions_lac_001)
+    corr3 = corr_matrix3[0,1]
+    R_sq3 = corr3**2
+    textstr = "R^2 = " + str(R_sq3)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
+
     plt.plot(lac_values_001,biomass_reals_001,'ko')
     plt.plot(lac_values_001,biomass_predictions_lac_001,'r')
     plt.xlabel('initial intracellular lactate concentration (mM)')
@@ -239,6 +257,11 @@ if (plot_verification_results == 'Y'):
         biomass_predictions_glc_c_001.append(biomass_predicted[0][0]/biomass_multiplier)
     
     fig = plt.figure()
+    corr_matrix4 = np.corrcoef(biomass_reals_001,biomass_predictions_glc_c_001)
+    corr4 = corr_matrix4[0,1]
+    R_sq4 = corr4**2
+    textstr = "R^2 = " + str(R_sq4)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
     plt.plot(glu_values_001,biomass_reals_001,'ko')
     plt.plot(glu_values_001,biomass_predictions_glc_c_001,'r')
     plt.xlabel('initial intracellular glucose concentration (mM)')
@@ -273,6 +296,11 @@ if (plot_verification_results == 'Y'):
         lac_ex_gln_c_001.append(lac_ex_predicted[0][3]/10)
     
     fig = plt.figure()
+    corr_matrix5 = np.corrcoef(lac_ex_reals_001,lac_ex_gln_c_001)
+    corr5 = corr_matrix5[0,1]
+    R_sq5 = corr5**2
+    textstr = "R^2 = " + str(R_sq5)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
     plt.plot(gln_values_001,lac_ex_reals_001,'ko')
     plt.plot(gln_values_001,lac_ex_gln_c_001,'r')
     plt.xlabel('initial intracellular glutamine concentration (mM)')
@@ -303,6 +331,11 @@ if (plot_verification_results == 'Y'):
         biomass_predictions_gln_001.append(biomass_predicted[0][1]/biomass_multiplier)
     
     fig = plt.figure()
+    corr_matrix6 = np.corrcoef(biomass_reals_001,biomass_predictions_gln_001)
+    corr6 = corr_matrix6[0,1]
+    R_sq6 = corr6**2
+    textstr = "R^2 = " + str(R_sq6)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
     plt.plot(glutamine_values_001,biomass_reals_001,'ko')
     plt.plot(glutamine_values_001,biomass_predictions_gln_001,'r')
     plt.xlabel('glucose uptake rate (mM/hr)')
@@ -338,6 +371,11 @@ if (plot_verification_results == 'Y'):
         biomass_predictions_glc_c_001.append(biomass_predicted[0][2]/multiplier[-1])
     
     fig = plt.figure()
+    corr_matrix7 = np.corrcoef(biomass_reals_001,biomass_predictions_glc_c_001)
+    corr7 = corr_matrix7[0,1]
+    R_sq7 = corr7**2
+    textstr = "R^2 = " + str(R_sq7)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
     plt.plot(glu_values_001,biomass_reals_001,'ko')
     plt.plot(glu_values_001,biomass_predictions_glc_c_001,'r')
     plt.xlabel('initial intracellular glucose concentration (mM)')
@@ -369,6 +407,11 @@ if (plot_verification_results == 'Y'):
         biomass_predictions_lac_001.append(biomass_predicted[0][3]/multiplier[-1])
     
     fig = plt.figure()
+    corr_matrix8 = np.corrcoef(biomass_reals_001,biomass_predictions_lac_001)
+    corr8 = corr_matrix8[0,1]
+    R_sq8 = corr8**2
+    textstr = "R^2 = " + str(R_sq8)
+    plt.annotate(textstr, xy=(0.05, 0.95), xycoords='axes fraction')
     plt.plot(lac_values_001,biomass_reals_001,'ko')
     plt.plot(lac_values_001,biomass_predictions_lac_001,'r')
     plt.xlabel('initial intracellular lactate concentration (mM)')
