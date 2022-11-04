@@ -1,7 +1,7 @@
 function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data, fold_change_wt_data, folder_path, conditions, title_name, rate_vals)
 
 
-    save_data = "Y";
+    save_data = "N";
     %% write reactions
     reactionFormulas = {'M_glc_D_e -> M_glc_D_c',...  % GLUT
     'M_glc_D_c + M_atp_i -> M_g6p_c + M_adp_i + M_h_c',...  % HK
@@ -144,8 +144,8 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
         "biomass[c]" 0   500;  % 10 biomass
     };
 
-    Simulate_WT = "N";
-    Simulate_KRAS = "Y";
+    Simulate_WT = "Y";
+    Simulate_KRAS = "N";
 
     %% load experimental data
     met_IDs_wt = fold_change_wt_data{:, 1};

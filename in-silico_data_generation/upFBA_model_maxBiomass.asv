@@ -1,7 +1,7 @@
 function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data, fold_change_wt_data, folder_path, conditions, title_name, rate_vals)
 
 
-    save_data = "Y";
+    save_data = "N";
     %% write reactions
     reactionFormulas = {'M_glc_D_e -> M_glc_D_c',...  % GLUT
     'M_glc_D_c + M_atp_i -> M_g6p_c + M_adp_i + M_h_c',...  % HK
@@ -144,8 +144,8 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
         "biomass[c]" 0   500;  % 10 biomass
     };
 
-    Simulate_WT = "N";
-    Simulate_KRAS = "Y";
+    Simulate_WT = "Y";
+    Simulate_KRAS = "N";
 
     %% load experimental data
     met_IDs_wt = fold_change_wt_data{:, 1};
@@ -342,7 +342,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                             end
                             i=i+1;
                            % fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
-                            sol_vector = [-1*KRAS_glc_bds(k),-1*KRAS_gln_bds(l),lac_i_bds(m),KRAS_gln_i_bds(n),KRAS_glc_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
+                            sol_vector = [-1*KRAS_glc_bds(k),-1*KRAS_gln_bds(l),KRAS_lac_i_bds(m),KRAS_gln_i_bds(n),KRAS_glc_i_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
                             if save_data == "Y"
                                 writematrix(sol_vector,'../DNN_model_generation/KRAS_in_silico_data.csv',Delimiter=',',WriteMode='append');
                             end

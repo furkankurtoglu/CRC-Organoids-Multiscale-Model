@@ -31,4 +31,6 @@ rate_vals_mat = [0.223 0.283 0.003 0.210 0.234 0.003 0.035 0.034;  ... % WT(CRC)
     folder_path = folder_path_lst{i};
     conditions = conditions_lst{i};
     title_name = title_name_lst{i};
+    tic
     upFBA_model_maxBiomass(init_value_data, fold_change_kras_data, fold_change_wt_data, folder_path, conditions, title_name, rate_vals);
+    toc
