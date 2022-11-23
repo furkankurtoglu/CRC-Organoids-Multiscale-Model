@@ -110,7 +110,7 @@
 		
 		<SVG>
 			<interval units="min">1</interval>
-			<enable>false</enable>
+			<enable>true</enable>
 		</SVG>
 		
 		<legacy_data>
@@ -300,7 +300,7 @@
 		<fibroblast_seeding type="bool" units="none">false</fibroblast_seeding>
 		<organoid_cell_seeding type="bool" units="none">false</organoid_cell_seeding>
 		<number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">1</number_of_cells> <!-- 170278 -->
-        <ground_truth_simulation type="bool" units="none">true</ground_truth_simulation>
+        <ground_truth_simulation type="bool" units="none">false</ground_truth_simulation>
 	</user_parameters>
 	
 </PhysiCell_settings>

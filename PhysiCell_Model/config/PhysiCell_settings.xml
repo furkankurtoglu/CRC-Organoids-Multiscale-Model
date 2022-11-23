@@ -83,10 +83,10 @@
 		<dx>20</dx>
 		<dy>20</dy>
 		<dz>20</dz>
-		<use_2D>true</use_2D>
+		<use_2D>true</use_2D>  -->	
 
 
-		<x_min>-2880</x_min>
+<!-- 		<x_min>-2880</x_min>
 		<x_max>2880</x_max>
 		<y_min>-512</y_min>
 		<y_max>512</y_max>

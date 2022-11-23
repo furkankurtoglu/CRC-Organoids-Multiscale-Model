@@ -42,9 +42,9 @@ time_point = "output000000"
 number_of_frames = len(saving_times)
 
 Temporospatial_Plotting = 'Y'
-Total_Amount_Analysis = 'Y'
+Total_Amount_Analysis = 'N'
 
-Ground_Truth = 'Y'
+
 
 
 
@@ -77,25 +77,23 @@ if Temporospatial_Plotting == 'Y':
             fine_tuple = (fine_oxy_tuple, fine_glu_tuple, fine_chem_tuple)
             
         
-        if Ground_Truth == 'N': 
-        
-            # Coarse MicroEnv Data Parsing
-            if path.exists(time_point + "_microenvironment1.mat"):
-                coarse_data = sio.loadmat(time_point + "_microenvironment1.mat")['multiscale_microenvironment']
-                coarse_x = coarse_data[0,:]
-                coarse_y = np.unique(fine_data[1,:])
-                coarse_X, coarse_Y = np.meshgrid(coarse_y, coarse_x)
-                coarse_oxy = coarse_data[4,:]
-                coarse_oxy = np.transpose(np.tile(coarse_oxy,(90,1)))
-                coarse_glu = coarse_data[5,:]
-                coarse_glu = np.transpose(np.tile(coarse_glu,(90,1)))
-                coarse_chem = coarse_data[6,:]
-                coarse_chem = np.transpose(np.tile(coarse_chem,(90,1)))
-                coarse_tuple = (coarse_X, coarse_Y, coarse_oxy, coarse_glu, coarse_chem)
-                
-                
-            if path.exists(time_point + "_microenvironment2.mat"):
-                transfer_region = sio.loadmat(time_point + "_microenvironment2.mat")['multiscale_microenvironment']
+        # Coarse MicroEnv Data Parsing
+        if path.exists(time_point + "_microenvironment1.mat"):
+            coarse_data = sio.loadmat(time_point + "_microenvironment1.mat")['multiscale_microenvironment']
+            coarse_x = coarse_data[0,:]
+            coarse_y = np.unique(fine_data[1,:])
+            coarse_X, coarse_Y = np.meshgrid(coarse_y, coarse_x)
+            coarse_oxy = coarse_data[4,:]
+            coarse_oxy = np.transpose(np.tile(coarse_oxy,(90,1)))
+            coarse_glu = coarse_data[5,:]
+            coarse_glu = np.transpose(np.tile(coarse_glu,(90,1)))
+            coarse_chem = coarse_data[6,:]
+            coarse_chem = np.transpose(np.tile(coarse_chem,(90,1)))
+            coarse_tuple = (coarse_X, coarse_Y, coarse_oxy, coarse_glu, coarse_chem)
+            
+            
+        if path.exists(time_point + "_microenvironment2.mat"):
+            transfer_region = sio.loadmat(time_point + "_microenvironment2.mat")['multiscale_microenvironment']
     
         return fine_tuple, coarse_tuple, transfer_tuple
         
@@ -118,18 +116,12 @@ if Temporospatial_Plotting == 'Y':
         tp = "output00000020"
         ft, ct, tt = data_parser(tp)
         fine_X, fine_Y, fine_oxy = ft[0]
-        if Ground_Truth == 'N': 
-            cX, cY, cOxy, cGlu, cChem = ct
-            w_X = np.concatenate((fine_X,cX),axis=0)
-            w_Y = np.concatenate((fine_Y,cY),axis=0)
-            w_O = np.concatenate((fine_oxy,cOxy),axis=0)
-            zmin = min([min(zl) for zl in w_O])
-            zmax = max([max(zl) for zl in w_O])
-        else:
-             w_X = fine_X
-             w_Y = fine_Y
-             w_O = fine_oxy
-             
+        cX, cY, cOxy, cGlu, cChem = ct
+        w_X = np.concatenate((fine_X,cX),axis=0)
+        w_Y = np.concatenate((fine_Y,cY),axis=0)
+        w_O = np.concatenate((fine_oxy,cOxy),axis=0)
+        zmin = min([min(zl) for zl in w_O])
+        zmax = max([max(zl) for zl in w_O])
         #levels = np.linspace(zmin, 0.28500001,41)
         #kw = dict(levels=levels, vmin=zmin, vmax=0.28500001, origin='lower')
         levels = np.linspace(0, 17.5,41)
@@ -284,18 +276,15 @@ if Total_Amount_Analysis == 'Y':
             voxel_volume = 32768/(10**15) # liters
             cell_volume = 2494/(10**15) # liters
             fine_volume = voxel_volume * len(fine_data[0])
-            if Ground_Truth == 'N':
-                coarse_data = sio.loadmat(time_p + "_microenvironment1.mat")['multiscale_microenvironment']
-                c_voxel_volume = voxel_volume*8100
-                coarse_volume = c_voxel_volume*len(coarse_data[0])
-                cEnv_O2 =sum(np.multiply(np.asarray(coarse_data[4,:]), c_voxel_volume)) # mmol
-                cEnv_glu = sum(np.multiply(np.asarray(coarse_data[5,:]), c_voxel_volume)) # mmol
-                cEnv_chem = sum(np.multiply(np.asarray(coarse_data[6,:]), c_voxel_volume)) # mmol
-                
+            coarse_data = sio.loadmat(time_p + "_microenvironment1.mat")['multiscale_microenvironment']
+            c_voxel_volume = voxel_volume*8100
+            coarse_volume = c_voxel_volume*len(coarse_data[0])
             micEnv_O2 =sum(np.multiply(np.asarray(fine_data[4,:]), voxel_volume)) # mmol
             micEnv_glu = sum(np.multiply(np.asarray(fine_data[5,:]), voxel_volume)) # mmol
             micEnv_chem = sum(np.multiply(np.asarray(fine_data[6,:]), voxel_volume)) # mmol
-
+            cEnv_O2 =sum(np.multiply(np.asarray(coarse_data[4,:]), c_voxel_volume)) # mmol
+            cEnv_glu = sum(np.multiply(np.asarray(coarse_data[5,:]), c_voxel_volume)) # mmol
+            cEnv_chem = sum(np.multiply(np.asarray(coarse_data[6,:]), c_voxel_volume)) # mmol
             '''
             if i == 0:
                 prev_oxy = micEnv_O2
@@ -314,9 +303,7 @@ if Total_Amount_Analysis == 'Y':
                 prev_oxy_density = (micEnv_O2.copy())/fine_volume
                 
             '''    
-            cEnv_O2 = 0
-            cEnv_glu = 0
-            cEnv_chem = 0
+    
             total_O2.append(micEnv_O2 + cEnv_O2)
             total_glu.append(micEnv_glu + cEnv_glu)
             total_chem.append(micEnv_chem + cEnv_chem)
@@ -332,10 +319,10 @@ if Total_Amount_Analysis == 'Y':
     print(total_chem)
     plt.figure()
     plt.plot(saving_times, total_O2)
-    plt.title('Total glucose is conserved during simulation (mmol)')
+    plt.title('Total Glucose Amount (mmol)')
     plt.xlabel('time(min)')
     plt.ylabel('Amount (mmol)')
-    plt.ylim((0., 0.0014))
+    plt.ylim((0, 0.002))
     plt.show()
     plt.figure()
     plt.plot(saving_times, total_glu)

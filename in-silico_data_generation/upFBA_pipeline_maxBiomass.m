@@ -1,10 +1,11 @@
-function [Model, stat, tmp_sol, v, r, p, q, Right_Mod] = upFBA_pipeline_maxBiomass(Model, initvalue, met_IDs, foldchange_means, foldchange_sds, SPECIES_BOUND)
+function [Model, stat, tmp_sol, v, r, p, q, Right_Mod, iteration] = upFBA_pipeline_maxBiomass(Model, initvalue, met_IDs, foldchange_means, foldchange_sds, SPECIES_BOUND)
 
     %% estimate metabolite rates of change
     changeSlopes = zeros(length(met_IDs), 1);
     changeIntervals = zeros(length(met_IDs), 1);
     SPECIES_HARD_CONSTRAINT = [];
     SPECIES_COUPLED_CONSTRAINT = [];
+    iteration = 0;
     for i = 1:length(met_IDs)
         tmp1 = initvalue(i) * (foldchange_means{i, 1} - 1) / 24.0;
         changeSlopes(i, 1) = tmp1;
@@ -83,6 +84,7 @@ function [Model, stat, tmp_sol, v, r, p, q, Right_Mod] = upFBA_pipeline_maxBioma
                    knockdown_biomass_mat(1) = NaN;
                 end
             end
+            iteration = iteration+1;
         else
             
             stat = tmp_sol.stat;
@@ -98,7 +100,8 @@ function [Model, stat, tmp_sol, v, r, p, q, Right_Mod] = upFBA_pipeline_maxBioma
                 knockdown_biomass_mat(1) = 0;
             end
 %             tmp_sol = ;
+            iteration = iteration+1;
         end
 %     end
-    
+    %iteration
 end

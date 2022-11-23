@@ -132,7 +132,7 @@ void setup_microenvironment( void )
 
     int microenvironment_voxel_number = microenvironment.mesh.voxels.size();
 
-
+    
     for ( int m = 0; m < microenvironment_voxel_number ; m++)
     {
         

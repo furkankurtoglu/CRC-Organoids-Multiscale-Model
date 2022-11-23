@@ -99,18 +99,18 @@ int main( int argc, char* argv[] )
     in.data_ = {0.16725,0.003,9.6,0.54,0.78};
     
 
-    #pragma omp parallel for 
-    for( int i=0; i < 3125; i++ )
+    //#pragma omp parallel for 
+    for( int i=0; i < 16807; i++ )
     {
         keras2cpp::Tensor out = model(in);
-        out.print();
+        //out.print();
     } 
     
         
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
  
-    std::cout << "Time taken by function: " << duration.count()/1000000 << " seconds" << std::endl;
+    std::cout << "Time taken by function: " << duration.count()/1000 << " miliseconds" << std::endl;
  
     return 0;
     

@@ -157,7 +157,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     
     %% clear all unsteady-state assumptions
     %% perform upFBA ------ Glycolysis, PPP, and TCA cycle
-    num_of_met_run = 5;
+    num_of_met_run = 7;
 
 
     num_of_FBA_runs = num_of_met_run*num_of_met_run;
@@ -199,6 +199,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     %%delete('data.csv');
     save('init_vals.mat',"init_value_mat");
     i=1;
+    total_iteration = 0;
     if (Simulate_WT == "Y")
         for k = 1:num_of_met_run
             for l = 1:num_of_met_run
@@ -223,7 +224,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                             initvalue(5)= lac_i_bds(m);
                             initvalue(6)= gln_i_bds(n);
                             initvalue(7)= glc_i_bds(o);
-                            [new_Model, stat, sol, v, r, p, q, right] = upFBA_pipeline_maxBiomass(Model, initvalue, met_IDs_wt, ...
+                            [new_Model, stat, sol, v, r, p, q, right,iteration] = upFBA_pipeline_maxBiomass(Model, initvalue, met_IDs_wt, ...
                             foldchange_means_wt, foldchange_sds_wt, SPECIES_BOUND_WT);
                             %WT_Model.model_lst{i} = new_Model;
                             %WT_Model.stat_lst(i) = stat;
@@ -253,15 +254,17 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                                 %%writematrix(sol_vector,'./data.csv',Delimiter=',',WriteMode='append');
                                 writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data.csv',Delimiter=',',WriteMode='append');
                             end
+                            total_iteration = total_iteration + iteration;
                         end
                     end
                 end
             end
             fprintf('m = %i\t %i\t %i\t %i\n', k,l,lac_sol,solution)
+            %total_iteration
         end
     end
     
-
+    total_iteration
 
 
 
