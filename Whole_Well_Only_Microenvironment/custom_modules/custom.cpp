@@ -140,7 +140,7 @@ void setup_microenvironment( void )
         if ( microenvironment.mesh.voxels[m].center[0] < 257 )
         {    
             microenvironment(m)[0]=0; // glucose
-            microenvironment(m)[1]=0; // glutamine
+            microenvironment(m)[1]=0.0; // glutamine
             microenvironment(m)[2]=16.0; //lactate
         }   
     }	

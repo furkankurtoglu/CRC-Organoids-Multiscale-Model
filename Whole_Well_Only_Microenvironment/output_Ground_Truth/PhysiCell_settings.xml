@@ -148,7 +148,7 @@
 				<diffusion_coefficient units="micron^2/min">30000.0</diffusion_coefficient>
 				<decay_rate units="1/min">0.0</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="mMolar">16.0</initial_condition>
+			<initial_condition units="mMolar">0.0</initial_condition>
 			<Dirichlet_boundary_condition units="mMolar" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
         

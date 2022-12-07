@@ -372,8 +372,7 @@ void simulate_DNN(double intracellular_dt )
             float fl_glc = u_glc;
             float fl_gln = u_gln;
             
-            //std::cout << "Glucose = " << fl_glc << std::endl;
-            //std::cout << "Glutamine = " << fl_gln << std::endl;    
+   
 			
 			
 			double int_conc_glu = (*all_cells)[i]->phenotype.molecular.internalized_total_substrates[glc_index];

@@ -34,7 +34,7 @@ saving_times = np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 
 
 
 main_path = Path(os.getcwd()).parent
-out_path = os.path.join(main_path, "output")
+out_path = os.path.join(main_path, "output_Ground_Truth")
 
 os.chdir(out_path)
 
