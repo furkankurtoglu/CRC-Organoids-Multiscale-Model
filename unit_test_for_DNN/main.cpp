@@ -88,12 +88,17 @@ int main( int argc, char* argv[] )
     
     auto model = keras2cpp::Model::load("WT_DNN.model"); //model input
     
-    double glc_ub = 0.223;
+/*     double glc_ub = 0.200;
     double gln_ub = 0.003;
-    double glc_i_ub = 1.56;
-    double gln_i_ub = 1.08;
-    double lac_i_ub = 19.2;
-    
+    double lac_i_ub = 14.4;
+    double glc_i_ub = 1.08;
+    double gln_i_ub = 0.39;
+ */
+    float glc_ub = 0.200;
+    float gln_ub = 0.003;
+    float lac_i_ub = 14.4;
+    float glc_i_ub = 1.08;
+    float gln_i_ub = 0.39;
     
     std::vector <double> glc_bds;
     std::vector <double> gln_bds;
@@ -101,7 +106,15 @@ int main( int argc, char* argv[] )
     std::vector <double> gln_i_bds;
     std::vector <double> lac_i_bds;
     
-    double number_of_evaluations = 5;
+ 
+    keras2cpp::Tensor in{5};
+    keras2cpp::Tensor out;
+    std::vector<double> result;
+    in.data_ = {glc_ub,gln_ub,lac_i_ub,glc_i_ub,gln_i_ub};
+    out = model(in);
+    out.print();
+    
+    /* double number_of_evaluations = 5;
     
     for (double i = 0; i < number_of_evaluations+1; ++i)
         glc_bds.push_back(i/number_of_evaluations * glc_ub);
@@ -157,7 +170,7 @@ int main( int argc, char* argv[] )
     }
 
     o_myfile.close();
-    i_myfile.close();
+    i_myfile.close(); */
 
 
     auto stop = high_resolution_clock::now();

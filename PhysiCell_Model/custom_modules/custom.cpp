@@ -164,7 +164,7 @@ void setup_tissue( void )
  
 	double tumor_radius = parameters.doubles( "tumor_radius" ); // 250.0; 
 	
-	double initial_tumor_radius = 10;//.parameters.doubles( "tumor_radius" ); 
+	double initial_tumor_radius = parameters.doubles( "tumor_radius" ); 
 	
     bool Two_Dim_MicEnv =  parameters.bools( "two_dim_seeding" );
     
@@ -232,7 +232,7 @@ void setup_tissue( void )
                     std::vector<std::vector<double>> positions = create_cell_sphere_positions(cell_radius,initial_tumor_radius); 
                     //std::cout << "creating " << positions.size() << " closely-packed organoid cells ... " << std::endl;
                     // create organoid
-								std::cout << rand() << std::endl;
+								//std::cout << rand() << std::endl;
                         double xrand = (rand() % 512) - 256;
                         double yrand = (rand() % 2880) - 1440;
                         double zrand = (rand() % 2880) - 1440;

@@ -147,7 +147,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     save_data = "Y";
     Simulate_WT = "Y";
     Simulate_KRAS = "N";
-    LHS = "Y";
+    LHS = "N";
 
     %% load experimental data
     met_IDs_wt = fold_change_wt_data{:, 1};
@@ -159,7 +159,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     
     %% clear all unsteady-state assumptions
     %% perform upFBA ------ Glycolysis, PPP, and TCA cycle
-    num_of_met_run = 7;
+    num_of_met_run = 10;
 
 
     num_of_FBA_runs = num_of_met_run*num_of_met_run;

@@ -126,12 +126,12 @@
 		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">60</interval>
+			<interval units="min">1440</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">1440</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -486,15 +486,15 @@
 	<user_parameters>
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		
-		<tumor_radius type="double" units="micron" description="tumor radius">12</tumor_radius>	
+		<tumor_radius type="double" units="micron" description="tumor radius">10</tumor_radius>	
         <experimental_average_number_of_cells type="double" units="cells">440000</experimental_average_number_of_cells>
         <experimental_well_volume type="double" units="cells">1.5e-3</experimental_well_volume>
         <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
         
         <random_initial_volume type="bool" units="dimensionless">true</random_initial_volume>
         <two_dim_seeding type="bool" units="dimensionless">false</two_dim_seeding>
-        <number_of_organoids type="int" units="none">1</number_of_organoids>
-		<initial_tumor_radius type="double" units="none">100</initial_tumor_radius>
+        <number_of_organoids type="int" units="none">250</number_of_organoids>
+		<initial_tumor_radius type="double" units="none">50</initial_tumor_radius>
 		
 		<whole_well_simulation type="bool" units="dimensionless">true</whole_well_simulation>
 		<intracellular_simulation type="bool" units="dimensionless">true</intracellular_simulation>
