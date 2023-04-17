@@ -89,6 +89,11 @@ int main( int argc, char* argv[] )
 	// load and parse settings file(s)
 	bool XML_status = false; 
 	char copy_command [1024]; 
+    
+    time_t t; // t passed as argument in function time()
+    struct tm * tt; // decalring variable for localtime()
+    
+    
 	if( argc > 1 )
 	{
 		XML_status = load_PhysiCell_config_file( argv[1] ); 
@@ -117,7 +122,7 @@ int main( int argc, char* argv[] )
 	std::cout << "setup microvironment is done" << std::endl;
 	bool intracellular_simulation = parameters.bools( "intracellular_simulation" );
 	
-	/* bool whole_well =  parameters.bools( "whole_well_simulation" );
+	bool whole_well =  parameters.bools( "whole_well_simulation" );
 	
 	Microenvironment coarse_well;
 	Microenvironment transfer_region;
@@ -139,7 +144,7 @@ int main( int argc, char* argv[] )
     double dz = 2880;
     
     // coarse_well.resize_space( -dx/2.0+16 , dx/2.0+16, 256.0, 5104.0 , -dz/2.0+16 , dz/2.0+16 , dx, dy, dz );
-    coarse_well.resize_space( 256.0, 5120.0, -1440.0, 1440.0, -1440.0, 1440.0, dx, dy, dz );
+    coarse_well.resize_space( 512.0, 5120.0, -2880.0, 2880.0, -2880.0, 2880.0, dx, dy, dz );
     std::vector<double> dirichlet_condition = { 0 , 0, 0 };
 
     coarse_well.set_substrate_dirichlet_activation(0,false);
@@ -174,7 +179,7 @@ int main( int argc, char* argv[] )
     transfer_region.set_density( 0 , "glucose", "mmHg", 30000 , 0.00 );
     transfer_region.add_density( "glutamine", "mM", 30000 , 0.0 );
     transfer_region.add_density( "lactate", "mM", 30000 , 0.0);
-    transfer_region.resize_space( 224.0, 288.0, -1440, 1440, -1440, 1440, tr_dx, tr_dy, tr_dz );
+    transfer_region.resize_space( 480.0, 544.0, -2880, 2880, -2880, 2880, tr_dx, tr_dy, tr_dz );
     
     transfer_region.diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_3D;   
     
@@ -189,7 +194,7 @@ int main( int argc, char* argv[] )
     transfer_region.write_to_matlab("output/output00000000_microenvironment2.mat");    
         
 			
-	std::cout << "whole well is created" << std::endl; */
+	std::cout << "whole well is created" << std::endl;
 	
 	
 	/* PhysiCell setup */ 
@@ -277,12 +282,16 @@ int main( int argc, char* argv[] )
 					
 					save_PhysiCell_to_MultiCellDS_v2( filename , microenvironment , PhysiCell_globals.current_time ); 
 
-                   /*  sprintf( filename , "%s/output%08u_microenvironment1.mat" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index );      
+                    sprintf( filename , "%s/output%08u_microenvironment1.mat" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index );      
                     coarse_well.write_to_matlab(filename);
                     
                     sprintf( filename , "%s/output%08u_microenvironment2.mat" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index );      
-                    transfer_region.write_to_matlab(filename); */
+                    transfer_region.write_to_matlab(filename);
+                    
 
+                time (&t); //passing argument to time()
+                tt = localtime(&t);
+                std::cout << "Current Day, Date and Time is = "<< asctime(tt) << std::endl;
 				}
 				
 				PhysiCell_globals.full_output_index++; 
@@ -306,9 +315,9 @@ int main( int argc, char* argv[] )
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
 			
 
-            /* coarse_well.simulate_diffusion_decay(diffusion_dt);
+            coarse_well.simulate_diffusion_decay(diffusion_dt);
         
-            //std::cout << "Coarse Well diffusion is done" << std::endl;
+             //std::cout << "Coarse Well diffusion is done" << std::endl;
             // Obtain coarse well concentrations
             std::vector<double> v1 = {0, 0, 0};
             std::vector<double> v2 = {0, 0, 0};
@@ -342,7 +351,7 @@ int main( int argc, char* argv[] )
             for ( int m = 0; m < microenvironment.mesh.voxels.size() ; m++)
             {  
                 double mic_cen_x = microenvironment.mesh.voxels[m].center[0];
-                if (mic_cen_x == 240)
+                if (mic_cen_x == 496)
                 {
                     transfer_region(tr_index)[0]=microenvironment(m)[0]; //oxygen
                     transfer_region(tr_index)[1]=microenvironment(m)[1]; //glucose
@@ -388,7 +397,7 @@ int main( int argc, char* argv[] )
             for ( int m = 0; m < transfer_region.mesh.voxels.size() ; m++)
             {
                 double mic_cen_x = transfer_region.mesh.voxels[m].center[0];
-                if (mic_cen_x == 272)
+                if (mic_cen_x == 528)
                 { 
                     v3[0] += transfer_region(m)[0]*transfer_region.mesh.voxels[m].volume;
                     v3[1] += transfer_region(m)[1]*transfer_region.mesh.voxels[m].volume;
@@ -412,7 +421,7 @@ int main( int argc, char* argv[] )
             for ( int m = 0; m < microenvironment.mesh.voxels.size() ; m++)
             {  
                 double mic_cen_x = microenvironment.mesh.voxels[m].center[0];
-                if (mic_cen_x == 240)
+                if (mic_cen_x == 496)
                 { 
                     microenvironment(m)[0] = transfer_region(tr_index)[0]; //oxygen
                     microenvironment(m)[1] = transfer_region(tr_index)[1];
@@ -428,7 +437,7 @@ int main( int argc, char* argv[] )
                     // 	tr_index += 1;
                     // }
                 }	
-            } */
+            }
 			
 			if ( intracellular_simulation == true)
 			{		

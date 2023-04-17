@@ -70,12 +70,12 @@
 #include "../modules/PhysiCell_settings.h"
 
 // assume these files; can override in read_DNN()
-auto WT_Model = keras2cpp::Model::load("WT_DNN_100k_even.model");
+auto WT_Model = keras2cpp::Model::load("WT_DNN_NO_INTRACELLULAR.model");
 auto KRAS_Model = keras2cpp::Model::load("KRAS_DNN.model");
 
 void create_cell_types( void )
 {
-    read_DNN("WT_DNN.model", "KRAS_DNN.model");
+    read_DNN("WT_DNN_NO_INTRACELLULAR.model", "KRAS_DNN.model");
 
 	// set the random seed 
 	SeedRandom();  
@@ -90,7 +90,7 @@ void create_cell_types( void )
 	initialize_default_cell_definition(); 
 	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
 	
-	cell_defaults.functions.volume_update_function = standard_volume_update_function;
+	cell_defaults.functions.volume_update_function = NULL;
 	cell_defaults.functions.update_velocity = standard_update_cell_velocity;
 
 	cell_defaults.functions.update_migration_bias = NULL; 
@@ -178,22 +178,25 @@ void setup_tissue( void )
     if ( Two_Dim_MicEnv == true )
     {
         // 2D Cell Seeding
-		double xmin=512;
-		double ymin=2880;
-		double zmin=2880;
-		double xmax= -xmin;
-		double ymax= -ymin;
-		double zmax= -zmin; 
-	
+        
+        double xmin = microenvironment.mesh.bounding_box[0]; 
+        double ymin = microenvironment.mesh.bounding_box[1]; 
+        double zmin = microenvironment.mesh.bounding_box[2]; 
+
+        double xmax = microenvironment.mesh.bounding_box[3]; 
+        double ymax = microenvironment.mesh.bounding_box[4]; 
+        double zmax = microenvironment.mesh.bounding_box[5];        
+        
         // place CRC_WT 
         //Cell_Definition* pCD = find_cell_definition( "CRC_WT"); 
         //std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl; 
         for( int n = 0 ; n < parameters.ints("number_of_monolayer_cells") ; n++ )
         {
+            
             std::vector<double> positions = {0,0,0}; 
-            double xrand = (rand() % 1024) - 512;
-            double yrand = (rand() % 5760) - 2880;
-            double zrand = (rand() % 5760) - 2880;
+            double xrand = (rand() % int(xmax*2)) - xmax;
+            double yrand = (rand() % int(ymax*2)) - ymax;
+            double zrand = (rand() % int(zmax*2)) - zmax;
             if (xrand < xmin) xmin = xrand;
             if (xrand > xmax) xmax = xrand;
             if (yrand < ymin) ymin = yrand;
@@ -208,26 +211,32 @@ void setup_tissue( void )
             pCell->assign_position( positions );
             pCell->state.orientation = {1,0,0};
             pCell->phenotype.geometry.polarity = 1;
-            pCell->phenotype.molecular.internalized_total_substrates[glucose_substrate_index] = 0 + (1.56) * uniform_random();//(1.56+0.88)/2; // FURKAN : Tomorrow I will make these ones stochastic
-            pCell->phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] = 0 + (1.08) * uniform_random();//(1.08+0.56)/2; // FURKAN : Tomorrow I will make these ones stochastic
-            pCell->phenotype.molecular.internalized_total_substrates[lactate_substrate_index] = 0 + (19.2) * uniform_random();//(19.2+6.4)/2; // FURKAN : Tomorrow I will make these ones stochastic
+            pCell->phenotype.molecular.internalized_total_substrates[glucose_substrate_index] = (1.56+0.88)/2;//0.88 + (1.56 - 0.88) * uniform_random();// // FURKAN : Tomorrow I will make these ones stochastic
+            pCell->phenotype.molecular.internalized_total_substrates[glutamine_substrate_index] =(1.08+0.56)/2; //0.56 + (1.08 - 0.56) * uniform_random();// // FURKAN : Tomorrow I will make these ones stochastic
+            pCell->phenotype.molecular.internalized_total_substrates[lactate_substrate_index] = (19.2+6.4)/2;//6.4 + (19.2-6.4) * uniform_random();// // FURKAN : Tomorrow I will make these ones stochastic
             double a = uniform_random();
-                if ( a > 0.6)
+                if ( a < 0.2)
                 {   
-                    pCell->phenotype.volume.multiply_by_ratio(a);
-                }  
+                    pCell->phenotype.volume.multiply_by_ratio(1 + a);
+                } 
+                if ( a > 0.8)
+                {   
+                    pCell->phenotype.volume.multiply_by_ratio(1 * a);
+                } 
             
         }
     }
     else
     {
-        double xmin=512;
-		double ymin=2880;
-		double zmin=2880;
-		double xmax= -xmin;
-		double ymax= -ymin;
-		double zmax= -zmin;
+        double xmin = microenvironment.mesh.bounding_box[0]; 
+        double ymin = microenvironment.mesh.bounding_box[1]; 
+        double zmin = microenvironment.mesh.bounding_box[2]; 
+        
+        double xmax = microenvironment.mesh.bounding_box[3]; 
+        double ymax = microenvironment.mesh.bounding_box[4]; 
+        double zmax = microenvironment.mesh.bounding_box[5];  
 		
+
 		double cell_radius = cell_defaults.phenotype.geometry.radius; 
 		// double initial_tumor_radius = 46; // parameters.doubles("initial_tumor_radius");
 		double initial_tumor_radius = parameters.doubles("initial_tumor_radius");
@@ -239,30 +248,41 @@ void setup_tissue( void )
 		int number_of_organoids = parameters.ints("number_of_organoids");
 		std::cout << "------ number_of_organoids = " << number_of_organoids << std::endl;		
 		
-        for (int i = 0; i < number_of_organoids; i++) // seeding number of organoid cells specified in PhysiCell_settings.xml
+        for (int j = 0; j < number_of_organoids; j++) // seeding number of organoid cells specified in PhysiCell_settings.xml
             {
+                
                 std::vector<std::vector<double>> positions = create_cell_sphere_positions(cell_radius,initial_tumor_radius); 
                 //std::cout << "creating " << positions.size() << " closely-packed organoid cells ... " << std::endl;
                 // create organoid
-                    std::cout << rand() << std::endl;
-                    double xrand = (rand() % 512) - 256;
-                    double yrand = (rand() % 2880) - 1440;
-                    double zrand = (rand() % 2880) - 1440;
-                    if (xrand < xmin) xmin = xrand;
-                    if (xrand > xmax) xmax = xrand;
-                    if (yrand < ymin) ymin = yrand;
-                    if (yrand > ymax) ymax = yrand;
-                    if (zrand < zmin) zmin = zrand;
-                    if (zrand > zmax) zmax = zrand;
-                //std::cout << positions.size() << std::endl;
-                for( int i=0; i < positions.size(); i++ )
-                {
-                    positions[i][0] += 0; //xrand;//(rand() % 5333) - 2666;
-                    positions[i][1] += 0;//yrand;//(rand() % 961) - 480;
-                    positions[i][2] += 0;//zrand;//(rand() % 5333) - 2666;
-                    pCell = create_cell( get_cell_definition("CRC_WT") );
-                    pCell->assign_position( positions[i] );
-                }
+                    double xrand = (rand() % (int(xmax-100)*2)) - (xmax-100);
+                    double yrand = (rand() % (int(ymax-100)*2)) - (ymax-100);
+                    double zrand = (rand() % (int(zmax-100)*2)) - (zmax-100);
+/*                     if (xrand < xmin) xrand = xmin;
+                    if (xrand > xmax) xrand = xmax;
+                    if (yrand < ymin) yrand = ymin;
+                    if (yrand > ymax) yrand = ymax;
+                    if (zrand < zmin) zrand = zmin;
+                    if (zrand > zmax) zrand = zmax; */
+                std::cout << positions.size() << std::endl;
+                    for( int i=0; i < positions.size(); i++ )
+                    {
+                        positions[i][0] += xrand;
+                        positions[i][1] += yrand;
+                        positions[i][2] += zrand;
+                        pCell = create_cell( get_cell_definition("CRC_WT") );
+                        pCell->assign_position( positions[i] );
+                        double a = uniform_random();
+                            if ( a < 0.2)
+                            {   
+                                pCell->phenotype.volume.multiply_by_ratio(1 + a);
+                            } 
+                            if ( a > 0.8)
+                            {   
+                                pCell->phenotype.volume.multiply_by_ratio(1 * a);
+                            } 
+                        pCell->custom_data[12] = j;
+                    }
+                    
             }
     }
     
@@ -366,43 +386,66 @@ void simulate_DNN(double intracellular_dt )
             {  
             if ((*all_cells)[i]->type == 0)
             {
+                //housekeeping
                 static int i_Glc_i = (*all_cells)[i]->custom_data.find_variable_index( "int_glc" );
                 static int i_Gln_i = (*all_cells)[i]->custom_data.find_variable_index( "int_gln" );
                 static int i_Lac_i = (*all_cells)[i]->custom_data.find_variable_index( "int_lac" );
                 static int biomass_result = (*all_cells)[i]->custom_data.find_variable_index( "biomass_flux" );
                 
-                keras2cpp::Tensor in{5};
+                keras2cpp::Tensor in{2};
                 keras2cpp::Tensor out;
-                double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index];
-                (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index] = 0.0371 * glc_val_int / 17.5;
-                //std::cout << "TEST 1 : " << 0.0371 * glc_val_int / 17.5 << std::endl;
-                double gln_val_int = (*all_cells)[i]->nearest_density_vector()[gln_index];
-                (*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index] = 0.00005 * gln_val_int / 5.5;
-                
+
+                // get pressure
                 double cell_pressure = (*all_cells)[i]->state.simple_pressure;
+                double cell_pressure_threshold = 1.1;
+                    
+                if (cell_pressure > cell_pressure_threshold)
+                {
+                    cell_pressure = cell_pressure_threshold;
+                }
+                // update exchange rates
+                double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index];
+                (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index] = 0.0371 * glc_val_int / 17.5* (1 - cell_pressure / cell_pressure_threshold);
+                double gln_val_int = (*all_cells)[i]->nearest_density_vector()[gln_index];
+                (*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index] = 0.00005 * gln_val_int / 5.5* (1 - cell_pressure / cell_pressure_threshold);
                 
-                double u_glc = ((*all_cells)[i]->custom_data[1] * exp_ave_n_cells / exp_vol_well * glc_val_int) / (1 + pow((cell_pressure / 0.5),2));
-                double u_gln = ((*all_cells)[i]->custom_data[2] * exp_ave_n_cells / exp_vol_well * gln_val_int) / (1 + pow((cell_pressure / 0.5),2));
-                //std::cout << "TEST 2 : " << u_glc << std::endl;
-                float fl_glc = u_glc;
-                float fl_gln = u_gln;
+
+                
+                //update exchange boundaries for FBA
+                double u_glc = ((*all_cells)[i]->custom_data[1] * exp_ave_n_cells / exp_vol_well * glc_val_int)* (1 - cell_pressure / cell_pressure_threshold);
+                double u_gln = ((*all_cells)[i]->custom_data[2] * exp_ave_n_cells / exp_vol_well * gln_val_int)* (1 - cell_pressure / cell_pressure_threshold);
                 
                 
-                double int_conc_glu = (*all_cells)[i]->phenotype.molecular.internalized_total_substrates[glc_index];
-                double int_conc_gln = (*all_cells)[i]->phenotype.molecular.internalized_total_substrates[gln_index];
-                double int_conc_lac = (*all_cells)[i]->phenotype.molecular.internalized_total_substrates[lac_index];
+                 float fl_glc = u_glc;
+                 float fl_gln = u_gln;
+ /*                std::cout << "double : " << u_glc <<std::endl;
+                std::cout << "float : " << fl_glc <<std::endl;
+                 */
                 
+                //update intracellular boundaries for FBA
+                
+
                 float fl_int_conc_glu = (*all_cells)[i]->custom_data[i_Glc_i];
                 float fl_int_conc_gln = (*all_cells)[i]->custom_data[i_Gln_i];
                 float fl_int_conc_lac = (*all_cells)[i]->custom_data[i_Lac_i];
-                
-                /* std::cout << "Input Intracellular Glucose = " << fl_int_conc_glu << std::endl;
+           
+
+
+/*                 std::cout << "FBA MODEL UPDATE" << std::endl; 
+                std::cout << "glc exchange boundary : " << u_glc << std::endl;
+                std::cout << "gln exchange boundary: " << u_gln << std::endl;           
+                std::cout << "Input Intracellular Glucose = " << fl_int_conc_glu << std::endl;
                 std::cout << "Input Intracellular Glutamine = " << fl_int_conc_gln << std::endl;    
-                std::cout << "Input Intracellular Lactate = " << fl_int_conc_lac << std::endl;     */
+                std::cout << "Input Intracellular Lactate = " << fl_int_conc_lac << std::endl;    
+                std::cout << "-----------------------------" << std::endl;
+                std::cout << std::endl; */
                 
-                in.data_ = {fl_glc,fl_gln,fl_int_conc_lac,fl_int_conc_glu,fl_int_conc_gln};
+                in.data_ = {fl_glc,fl_gln};
                 //in.data_ = {0.1115,0.0025,9.6,0.54,0.39}; test values
-                out = WT_Model(in); // model evaluation
+                
+                // model evaluation
+                out = WT_Model(in); 
+                //std::cout << "ARRIVED" << std::endl;
                 //out.print();
                 
                 std::vector<double> result;
@@ -410,22 +453,30 @@ void simulate_DNN(double intracellular_dt )
                 
                 double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_normalizer");
                 
-    /*             std::cout << "Biomass = " << biomass_creation_flux << std::endl;
+                
+/*                 std::cout << "FBA SIMULATION" << std::endl; 
+                std::cout << "Biomass = " << biomass_creation_flux << std::endl;
                 std::cout << "Intracellular Glucose Change = " << result[1]/10 << std::endl;
                 std::cout << "Intracellular Glutamine Change = " << result[2]/10 << std::endl;
-                std::cout << "Intracellular Lactate Change = " << result[3]/10 << std::endl; */
+                std::cout << "Intracellular Lactate Change = " << result[3]/10 << std::endl;   
+                std::cout << "-----------------------------" << std::endl;
+                std::cout << std::endl; */
+                
                 
                 //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
+                //std::cout << "Biomass Before = " << (*all_cells)[i]->phenotype.volume.total << std::endl;
                 
+                // update cellular volume
                 double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
                 (*all_cells)[i]->custom_data[biomass_result]  = biomass_creation_flux;
                 //std::cout << "Biomass = " << biomass_creation_flux << std::endl;
                 (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
+                //std::cout << "Cell ID : " << (*all_cells)[i]->ID <<  "    Biomass After = " << (*all_cells)[i]->phenotype.volume.total << std::endl;
 
                 
-                double glucose_consumption = result[1]/10/60  * intracellular_dt; //DNN multipliers
+                /* double glucose_consumption = result[1]/10/60  * intracellular_dt; //DNN multipliers
                 double glutamine_consumption = result[2]/10/60 * intracellular_dt;
-                double lactate_consumption = result[3]/10/60 * intracellular_dt;
+                double lactate_consumption = result[3]/10/60 * intracellular_dt; */
                 
                 
     /* 			std::cout << "Biomass = " << biomass_creation_flux << std::endl;
@@ -435,9 +486,9 @@ void simulate_DNN(double intracellular_dt )
                 
                 
                 //std::cout << "Before : "  << (*all_cells)[i]->custom_data[i_Lac_i] <<std::endl;
-                (*all_cells)[i]->custom_data[i_Glc_i] = (*all_cells)[i]->custom_data[i_Glc_i]-glucose_consumption;
-                (*all_cells)[i]->custom_data[i_Gln_i] = (*all_cells)[i]->custom_data[i_Gln_i]-glutamine_consumption;
-                (*all_cells)[i]->custom_data[i_Lac_i] = (*all_cells)[i]->custom_data[i_Lac_i]-lactate_consumption;
+                //(*all_cells)[i]->custom_data[i_Glc_i] = (*all_cells)[i]->custom_data[i_Glc_i]-glucose_consumption;
+                //(*all_cells)[i]->custom_data[i_Gln_i] = (*all_cells)[i]->custom_data[i_Gln_i]-glutamine_consumption;
+                //(*all_cells)[i]->custom_data[i_Lac_i] = (*all_cells)[i]->custom_data[i_Lac_i]-lactate_consumption;
                 //std::cout << "After : "  << (*all_cells)[i]->custom_data[i_Lac_i] <<std::endl;
 
                 if ((*all_cells)[i]->custom_data[i_Glc_i] < 0)
@@ -467,12 +518,11 @@ void simulate_DNN(double intracellular_dt )
                 
                 
                 if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
-                    {
-                        if (cell_pressure < 0.45)
-                        {
-                            //(*all_cells)[i]->phenotype.volume.multiply_by_ratio(2494/(*all_cells)[i]->phenotype.volume.total);
-                            (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
-                        }
+                    {        
+                        //if (cell_pressure < 1.1)
+                      //  {
+                           (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
+                       // }
                     }
                 else
                     {
@@ -480,6 +530,20 @@ void simulate_DNN(double intracellular_dt )
                     }
             }
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         /* // KRAS type simulation
         else if ((*all_cells)[i]->type == 1)
         {  
@@ -519,7 +583,7 @@ void simulate_DNN(double intracellular_dt )
             (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index]=fl_glc;
             (*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index]=fl_gln;
             
-            double cell_pressure = (*all_cells)[i]->state.simple_pressure;
+            
 
             if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
                 {

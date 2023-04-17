@@ -86,7 +86,7 @@ int main( int argc, char* argv[] )
     auto start = high_resolution_clock::now();
 
     
-    auto model = keras2cpp::Model::load("WT_DNN.model"); //model input
+    auto model = keras2cpp::Model::load("WT_DNN_NO_INTRACELLULAR.model"); //model input
     
 /*     double glc_ub = 0.200;
     double gln_ub = 0.003;
@@ -107,12 +107,16 @@ int main( int argc, char* argv[] )
     std::vector <double> lac_i_bds;
     
  
-    keras2cpp::Tensor in{5};
+    keras2cpp::Tensor in{2};
     keras2cpp::Tensor out;
     std::vector<double> result;
-    in.data_ = {glc_ub,gln_ub,lac_i_ub,glc_i_ub,gln_i_ub};
+    in.data_ = {glc_ub,gln_ub};
     out = model(in);
     out.print();
+    
+    result = out.result_vector();
+    double biomass_creation_flux = result[0]/100;
+    std::cout << "Biomass = " << biomass_creation_flux << std::endl;
     
     /* double number_of_evaluations = 5;
     

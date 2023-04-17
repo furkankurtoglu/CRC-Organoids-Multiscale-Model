@@ -8,14 +8,18 @@ function [Model, stat, tmp_sol, v, r, p, q, Right_Mod, iteration] = upFBA_pipeli
     iteration = 0;
     for i = 1:length(met_IDs)
         tmp1 = initvalue(i) * (foldchange_means{i, 1} - 1) / 24.0;
+        %disp(tmp1)
         changeSlopes(i, 1) = tmp1;
         changeIntervals(i, 1) = 0;
         tmp_met_ID = split(met_IDs{i}, ";");
         if numel(tmp_met_ID) == 1
             SPECIES_HARD_CONSTRAINT = [SPECIES_HARD_CONSTRAINT; met_IDs(i) tmp1];
             met_IDs(i);
+            %disp(SPECIES_HARD_CONSTRAINT)
         else
             SPECIES_COUPLED_CONSTRAINT = [SPECIES_COUPLED_CONSTRAINT; met_IDs(i) tmp1];
+            %met_IDs(i)
+            %disp(tmp_met_ID)
         end
     end
     

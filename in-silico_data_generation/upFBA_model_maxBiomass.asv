@@ -1,7 +1,6 @@
 function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data, fold_change_wt_data, folder_path, conditions, title_name, rate_vals)
 
 
-    save_data = "N";
     %% write reactions
     reactionFormulas = {'M_glc_D_e -> M_glc_D_c',...  % GLUT
     'M_glc_D_c + M_atp_i -> M_g6p_c + M_adp_i + M_h_c',...  % HK
@@ -115,38 +114,13 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
         [1, -9], 'dsense', ['E']);
     Model = changeObjective(Model, 'biomass_obj');
 
-    % specify bounds for the metabolite concentrations
-    SPECIES_BOUND_WT={
-        "M_h2o_b[c]"	-500	500	;	% 1 M_h2o_b
-        "M_o2_b[c]"	-500	500	;	% 2 M_o2_b
-        "M_co2_b[c]"	-500	500	;	% 3 M_co2_b
-        "M_pi_b[c]"	-500	500	;	% 4 M_pi_b
-        "M_h_b[c]"	-500	500	;	% 5 M_h_b
-        "M_lac_L_b[c]"	0	500	;	% 6 M_lac_L_b
-        "M_glc_D_b[c]"	-100	500	;	% 7 M_glc_D_b
-        "M_gln_L_b[c]"	0	500	;	% 8 M_gln_L_b
-        "M_nh4_b[c]"	-500	500	;	% 9 M_nh4_b
-        %"biomass[c]" rate_vals(7) rate_vals(7) ; % growth rate as constraint; baseline
-        "biomass[c]" 0   500 ; % 10 biomass
-    };
 
-    SPECIES_BOUND_KRAS={
-        "M_h2o_b[c]"	-500	500	;	% 1 M_h2o_b
-        "M_o2_b[c]"	-500	500	;	% 2 M_o2_b
-        "M_co2_b[c]"	-500	500	;	% 3 M_co2_b
-        "M_pi_b[c]"	-500	500	;	% 4 M_pi_b
-        "M_h_b[c]"	-500	500	;	% 5 M_h_b
-        "M_lac_L_b[c]"	0	500	;	% 6 M_lac_L_b
-        "M_glc_D_b[c]"	-100	500	;	% 7 M_glc_D_b
-        "M_gln_L_b[c]"	0	500	;	% 8 M_gln_L_b
-        "M_nh4_b[c]"	-500	500	;	% 9 M_nh4_b
-        %"biomass[c]" rate_vals(7) rate_vals(7) ; % growth rate as constraint; baseline
-        "biomass[c]" 0   500;  % 10 biomass
-    };
 
+    num_of_met_run = 100;
+    save_data = "Y";
     Simulate_WT = "Y";
     Simulate_KRAS = "N";
-    LHS = "Y";
+    LHS = "N";
 
     %% load experimental data
     met_IDs_wt = fold_change_wt_data{:, 1};
@@ -158,7 +132,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
     
     %% clear all unsteady-state assumptions
     %% perform upFBA ------ Glycolysis, PPP, and TCA cycle
-    num_of_met_run = 7;
+    
 
 
     num_of_FBA_runs = num_of_met_run*num_of_met_run;
@@ -177,27 +151,31 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
        %     .* rand(size(init_value_data(:, 1), 1), num_runs);
 
     
-    lac_bounds = [0, 0];
-    gln_bounds = [0.0, 0.0];
-    glc_bounds = [0.0, 0.0];
+    lac_bounds = [6.4, 19.2];
+    gln_bounds = [0.56, 1.08];
+    glu_bounds = [0.88, 1.56];
 
     init_value_mat = zeros(7,num_of_FBA_runs);
-    init_value_mat(1,:) = 0;
-    init_value_mat(2,:) = 0.62;
-    init_value_mat(3,:) = 0.54;
-    init_value_mat(4,:) = 0.54;
-   % init_value_mat(5,:) = sum(lac_bounds)/2;
-   % init_value_mat(6,:) = sum(gln_bounds)/2;
-    %init_value_mat(7,:) = sum(glc_bounds)/2;
+%     init_value_mat(1,:) = 3.87;
+%     init_value_mat(2,:) = 0.62;
+%     init_value_mat(3,:) = 0.54;
+%     init_value_mat(4,:) = 0.54;
+%     init_value_mat(5,:) = sum(lac_bounds)/2;
+%     init_value_mat(6,:) = sum(gln_bounds)/2;
+%     init_value_mat(7,:) = sum(glu_bounds)/2;
 
     if (LHS == 'N')
 
-        glc_bds = linspace(-0.223, 0,num_of_met_run);
-        gln_bds = linspace(-0.003, 0,num_of_met_run);
+        glc_bds = linspace(-0.223*10, 0,num_of_met_run);
+        gln_bds = linspace(-0.003*10, 0,num_of_met_run);
     
-        glc_i_bds = linspace(0,1.56,num_of_met_run);
-        gln_i_bds = linspace(0,1.08,num_of_met_run);
-        lac_i_bds = linspace(0.0,19.2,num_of_met_run);
+        g6p_i_bds = linspace(1.68,6.0,num_of_met_run);
+        fbp_i_bds = linspace(0.16,1.08,num_of_met_run);
+        g3p_i_bds = linspace(0.24,0.84,num_of_met_run);
+        pep_i_bds = linspace(0.24,0.84,num_of_met_run);
+        lac_i_bds = linspace(6.4,19.2,num_of_met_run);
+        gln_i_bds = linspace(0.56,1.08,num_of_met_run); 
+        glu_i_bds = linspace(0.88,1.56,num_of_met_run);
         
         %%delete('data.csv');
         save('init_vals.mat',"init_value_mat");
@@ -207,8 +185,9 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
             for k = 1:num_of_met_run
                 for l = 1:num_of_met_run
                     for m = 1:num_of_met_run
-                        for n = 1:num_of_met_run
-                            for o = 1:num_of_met_run
+                       for n = 1:num_of_met_run
+                           for o = 1:num_of_met_run
+                                    % specify bounds for the metabolite concentrations
                                     SPECIES_BOUND_WT={
                                     "M_h2o_b[c]"	-500	500	;	% 1 M_h2o_b
                                     "M_o2_b[c]"	-500	500	;	% 2 M_o2_b
@@ -221,28 +200,38 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                                     "M_nh4_b[c]"	-500	500	;	% 9 M_nh4_b
                                     %"biomass[c]" rate_vals(7) rate_vals(7) ; % growth rate as constraint; baseline
                                     "biomass[c]" 0   500 ; % 10 biomass
+                                    %"M_lac_L_c[c]"  6.4 19.2 ; % 11 intracellular_Lactate
                                 };
             
                                 initvalue = init_value_mat(:, 1);
+
                                 initvalue(5)= lac_i_bds(m);
                                 initvalue(6)= gln_i_bds(n);
-                                initvalue(7)= glc_i_bds(o);
-                                [new_Model, stat, sol, v, r, p, q, right,iteration] = upFBA_pipeline_maxBiomass(Model, initvalue, met_IDs_wt, ...
-                                foldchange_means_wt, foldchange_sds_wt, SPECIES_BOUND_WT);
+                                initvalue(7)= glu_i_bds(o);
+                                [new_Model, stat, sol, v, r, p, q, right,iteration] = upFBA_pipeline_maxBiomass(Model, initvalue, met_IDs_wt, foldchange_means_wt, foldchange_sds_wt, SPECIES_BOUND_WT);
                                 %WT_Model.model_lst{i} = new_Model;
                                 %WT_Model.stat_lst(i) = stat;
                                 %WT_Model.sol_lst{i} = sol;
                                 if (size(sol.x)>0)
                                     lac_sol = sol.x(68);
                                     solution = sol.x(73);
-                                    intra_lac_change = sol.x(44)-sol.x(43);
-                                    intra_glu_change = sol.x(1)-sol.x(2);
-                                    intra_gln_change = sol.x(61)+sol.x(74)-sol.x(45);
+                                    intra_g6p_change = sol.x(2)-sol.x(3)-sol.x(17);  % M_g6p_c
+                                    intra_fbp_change = sol.x(4)-sol.x(5)-sol.x(6); % M_fdp_c
+                                    intra_g3p_change = sol.x(6)-sol.x(7)-sol.x(8)-sol.x(22)+sol.x(23)+sol.x(24); % M_g3p_c
+                                    intra_pep_change = sol.x(14)-sol.x(55); % M_pep_c
+                                    intra_lac_change = sol.x(43)-sol.x(44);  % M_lac_L_c
+                                    intra_gln_change = sol.x(61)+sol.x(74)-sol.x(45); % M_gln_L_i
+                                    intra_glu_change = sol.x(45)-sol.x(46)-sol.x(47)-sol.x(74);% M_glu_L_m
+
                                 else
                                     solution = 0.0;
+                                    intra_fbp_change = 0;
+                                    intra_g6p_change = 0;
+                                    intra_g3p_change = 0;
+                                    intra_pep_change = 0;
                                     intra_lac_change = 0;
-                                    intra_glu_change = 0;
                                     intra_gln_change = 0;
+                                    intra_glu_change = 0;
                                 end
                                 %WT_Model.v_lst = [WT_Model.v_lst v];
                                 %WT_Model.r_lst = [WT_Model.r_lst r];
@@ -251,11 +240,14 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                                 %WT_Model.initvalue_lst{i} = [WT_Model.initvalue_lst initvalue];
                                 i=i+1;
                                 %fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
-                                sol_vector = [-1*glc_bds(k),-1*gln_bds(l),lac_i_bds(m),gln_i_bds(n),glc_i_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
+                                %sol_vector = [-1*glc_bds(k),-1*gln_bds(l),lac_i_bds(m),gln_i_bds(n),glu_i_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
+                                sol_vector = [-1*glc_bds(k),-1*gln_bds(l),solution];
+                                int_met_vector = [-1*glc_bds(k),-1*gln_bds(l),solution,intra_g6p_change,intra_fbp_change,intra_g3p_change,intra_pep_change,intra_lac_change,intra_gln_change,intra_glu_change];
                                 if save_data == "Y"
                                     
                                     %%writematrix(sol_vector,'./data.csv',Delimiter=',',WriteMode='append');
-                                    writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data.csv',Delimiter=',',WriteMode='append');
+                                    %writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data_even_NO_INTRACELLULAR.csv',Delimiter=',',WriteMode='append');
+                                    writematrix(int_met_vector,'../DNN_model_generation/Tracked_Intracellular_Metabolites.csv',Delimiter=',',WriteMode='append')
                                 end
                                 total_iteration = total_iteration + iteration;
                             end
@@ -275,8 +267,8 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
         glc_bds = -0.223;
         gln_bds = -0.003;
         lac_i_bds = 19.2;
-        glc_i_bds = 1.56;
         gln_i_bds = 1.08;
+        glu_i_bds = 1.56;
 
 
         for i = 1:size(X,1)
@@ -288,15 +280,15 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                                     "M_h_b[c]"	-500	500	;	% 5 M_h_b
                                     "M_lac_L_b[c]"	0.283	0.283;	% 6 M_lac_L_b
                                     "M_glc_D_b[c]"	X(i,1)*glc_bds	X(i,1)*glc_bds	;	% 7 M_glc_D_b
-                                    "M_gln_L_b[c]"	X(i,2)*glc_bds	gln_bds(2);	% 8 M_gln_L_b
+                                    "M_gln_L_b[c]"	X(i,2)*gln_bds	X(i,2)*gln_bds;	% 8 M_gln_L_b
                                     "M_nh4_b[c]"	-500	500	;	% 9 M_nh4_b
                                     %"biomass[c]" rate_vals(7) rate_vals(7) ; % growth rate as constraint; baseline
                                     "biomass[c]" 0   500 ; % 10 biomass
                                 };
             initvalue = init_value_mat(:, 1);
             initvalue(5)= X(i,3)*lac_i_bds;
-            initvalue(6)= X(i,4)*lac_i_bds;
-            initvalue(7)= glc_i_bds(o);
+            initvalue(6)= X(i,4)*gln_i_bds;
+            initvalue(7)= X(i,5)*glu_i_bds;
             [new_Model, stat, sol, v, r, p, q, right,iteration] = upFBA_pipeline_maxBiomass(Model, initvalue, met_IDs_wt, ...
             foldchange_means_wt, foldchange_sds_wt, SPECIES_BOUND_WT);
             %WT_Model.model_lst{i} = new_Model;
@@ -306,12 +298,12 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                 lac_sol = sol.x(68);
                 solution = sol.x(73);
                 intra_lac_change = sol.x(44)-sol.x(43);
-                intra_glu_change = sol.x(1)-sol.x(2);
+                intra_g6p_change = sol.x(1)-sol.x(2);
                 intra_gln_change = sol.x(61)+sol.x(74)-sol.x(45);
             else
                 solution = 0.0;
                 intra_lac_change = 0;
-                intra_glu_change = 0;
+                intra_g6p_change = 0;
                 intra_gln_change = 0;
             end
             %WT_Model.v_lst = [WT_Model.v_lst v];
@@ -321,11 +313,11 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
             %WT_Model.initvalue_lst{i} = [WT_Model.initvalue_lst initvalue];
             i=i+1;
             %fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
-            sol_vector = [-1*glc_bds(k),-1*gln_bds(l),lac_i_bds(m),gln_i_bds(n),glc_i_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
+            sol_vector = [-1*X(i,1)*glc_bds,-1*X(i,2)*gln_bds,X(i,3)*lac_i_bds,X(i,4)*gln_i_bds,X(i,5)*glu_i_bds,solution,intra_g6p_change,intra_gln_change,intra_lac_change];
             if save_data == "Y"
                 
                 %%writematrix(sol_vector,'./data.csv',Delimiter=',',WriteMode='append');
-                writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data.csv',Delimiter=',',WriteMode='append');
+                writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data_LHS_sampled.csv',Delimiter=',',WriteMode='append');
             end
         end
 
@@ -404,17 +396,17 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                                 lac_sol = sol.x(68);
                                 solution = sol.x(73);
                                 intra_lac_change = sol.x(44)-sol.x(43);
-                                intra_glu_change = sol.x(1)-sol.x(2);
+                                intra_g6p_change = sol.x(1)-sol.x(2);
                                 intra_gln_change = sol.x(61)+sol.x(74)-sol.x(45);
                             else
                                 solution = 0.0;
                                 intra_lac_change = 0;
-                                intra_glu_change = 0;
+                                intra_g6p_change = 0;
                                 intra_gln_change = 0;
                             end
                             i=i+1;
                            % fprintf('m = %i\t %i\t %i\t %i\n', k,m,lac_sol,solution)
-                            sol_vector = [-1*KRAS_glc_bds(k),-1*KRAS_gln_bds(l),KRAS_lac_i_bds(m),KRAS_gln_i_bds(n),KRAS_glc_i_bds(o),solution,intra_glu_change,intra_gln_change,intra_lac_change];
+                            sol_vector = [-1*KRAS_glc_bds(k),-1*KRAS_gln_bds(l),KRAS_lac_i_bds(m),KRAS_gln_i_bds(n),KRAS_glc_i_bds(o),solution,intra_g6p_change,intra_gln_change,intra_lac_change];
                             if save_data == "Y"
                                 writematrix(sol_vector,'../DNN_model_generation/KRAS_in_silico_data.csv',Delimiter=',',WriteMode='append');
                             end

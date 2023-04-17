@@ -2,7 +2,7 @@
 function model = addSpeciesBounds_new(model, SPECIES_BOUND)
     % obtain full stoichiometric matrix
     full_Model_S = full(model.S);
-
+    %disp('I AM IN ADDSPECIES BOUNDS')
     % prepare data to be appended to Model
     species_lb_S_rows = [];
     species_ub_S_rows = [];

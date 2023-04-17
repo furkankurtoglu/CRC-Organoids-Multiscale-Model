@@ -11,7 +11,7 @@ cell_type = 'WT'
 train_model = 'Y'
 save_model = 'Y'
 draw_convergence = 'Y'
-plot_verification_results = 'Y'
+plot_verification_results = 'n'
 
 
 
@@ -19,7 +19,7 @@ plot_verification_results = 'Y'
 
 
 # load the dataset
-dataname = cell_type + '_in_silico_data_even_distributed_10k.csv'
+dataname = cell_type + '_in_silico_data_even_NO_INTRACELLULAR.csv'
 dataset = loadtxt(dataname, delimiter=',')
 sorted_data = np.array(dataset)
 data = np.array(dataset)
@@ -55,9 +55,13 @@ biomass_multiplier = 100
 
 
 # split into input (X) and output (y) variables
-X = training_data[:,0:5]
-y = training_data[:,5:9]
-multiplier = [100,10,-10,10]
+X = training_data[:,0:2]
+y = training_data[:,2]
+multiplier = [100]
+
+# X = training_data[:,0:5]
+# y = training_data[:,5:9]
+# multiplier = [100,10,-10,10]
 
 y = y*multiplier
 
@@ -66,13 +70,13 @@ y = y*multiplier
 if (train_model == 'Y'):
     # define the keras model
     model = Sequential()
-    model.add(Dense(10, input_shape=(5,), activation='relu'))
-    model.add(Dense(20, activation='relu'))
-    model.add(Dense(4, activation='relu'))
+    model.add(Dense(32, input_shape=(9,), activation='relu'))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dense(8, activation='relu'))
     # compile the keras model
     model.compile(loss='mse', optimizer='adam', metrics=['mae'])
     # fit the keras model on the dataset
-    history = model.fit(X, y, epochs=4, batch_size=2)
+    history = model.fit(X, y, epochs=100, batch_size=200)
 
 if (draw_convergence == 'Y'):
     plt.plot(history.history['mae'],'o',color='black')
@@ -84,22 +88,38 @@ if (draw_convergence == 'Y'):
 
 
 #%%
-x_test_data = test_data[:,0:5]
-y_test_data = test_data[:,5:9]
+# x_test_data = test_data[:,0:5]
+# y_test_data = test_data[:,5:9]
+# y_test_data = y_test_data * multiplier
+
+
+x_test_data = test_data[:,0:2]
+y_test_data = test_data[:,2]
 y_test_data = y_test_data * multiplier
 # evaluate the keras model
 print('EVALUATION')
 
 
 
+# glucose_value = 0.0743333333333333
+# glutamine_value_001 = 0.0025
+# lactate_conc = 0.0
+# glucose_conc = 0.9
+# glutamine_conc = 0.26
+
+
+# testing = model.predict([[glucose_value,glutamine_value_001,lactate_conc,glucose_conc,glutamine_conc]])
+# print(testing[0]/biomass_multiplier)
+
+
 glucose_value = 0.0743333333333333
-glutamine_value_001 = 0.0025
+glutamine_value_001 = 0.00133333333333333
 lactate_conc = 0.0
 glucose_conc = 0.9
 glutamine_conc = 0.26
 
 
-testing = model.predict([[glucose_value,glutamine_value_001,lactate_conc,glucose_conc,glutamine_conc]])
+testing = model.predict([[glucose_value,glutamine_value_001]])
 print(testing[0]/biomass_multiplier)
 
 
@@ -107,42 +127,42 @@ print(testing[0]/biomass_multiplier)
 
 
 #%% Overall R^2
-p_biomass = []
-p_intra_glc = []
-p_intra_gln = []
-p_intra_lac = []
+# p_biomass = []
+# p_intra_glc = []
+# p_intra_gln = []
+# p_intra_lac = []
 
 
-for t in test_data:
-    glc = t[0]
-    gln = t[1]
-    lac_i = t[2]
-    glc_i = t[3]
-    gln_i = t[4]
-    testing =  model.predict([[glc,gln,lac_i,glc_i,gln_i]])
-    p_biomass.append(testing[0][0])
-    p_intra_glc.append(testing[0][1])
-    p_intra_gln.append(testing[0][2])
-    p_intra_lac.append(testing[0][3])
-
-
-
-p_biomass = np.array(p_biomass) / 100
-p_intra_gln = np.array(p_intra_gln) / -10
-p_intra_lac = np.array(p_intra_lac) / 10
+# for t in test_data:
+#     glc = t[0]
+#     gln = t[1]
+#     lac_i = t[2]
+#     glc_i = t[3]
+#     gln_i = t[4]
+#     testing =  model.predict([[glc,gln,lac_i,glc_i,gln_i]])
+#     p_biomass.append(testing[0][0])
+#     p_intra_glc.append(testing[0][1])
+#     p_intra_gln.append(testing[0][2])
+#     p_intra_lac.append(testing[0][3])
 
 
 
-t_biomass = test_data[:,5]
-t_intra_glc = test_data[:,6]
-t_intra_gln = test_data[:,7]
-t_intra_lac = test_data[:,8]
+# p_biomass = np.array(p_biomass) / 100
+# p_intra_gln = np.array(p_intra_gln) / -10
+# p_intra_lac = np.array(p_intra_lac) / 10
 
 
-r2_biomass = r2_score(t_biomass, p_biomass)
-r2_intra_glc = r2_score(t_intra_glc, p_intra_glc)
-r2_intra_gln = r2_score(t_intra_gln, p_intra_gln)
-r2_intra_lac = r2_score(t_intra_lac, p_intra_lac)
+
+# t_biomass = test_data[:,5]
+# t_intra_glc = test_data[:,6]
+# t_intra_gln = test_data[:,7]
+# t_intra_lac = test_data[:,8]
+
+
+# r2_biomass = r2_score(t_biomass, p_biomass)
+# r2_intra_glc = r2_score(t_intra_glc, p_intra_glc)
+# r2_intra_gln = r2_score(t_intra_gln, p_intra_gln)
+# r2_intra_lac = r2_score(t_intra_lac, p_intra_lac)
 
 
 
@@ -462,7 +482,7 @@ r2_intra_lac = r2_score(t_intra_lac, p_intra_lac)
 #save model
 if (save_model == 'Y'):
     import csv 
-    model_name = cell_type + '_DNN_10k_even' + '.model'
+    model_name = cell_type + '_DNN_NO_INTRACELLULAR' + '.model'
     export_model(model, model_name)
     
     with open('multipliers.csv', 'w') as file:

@@ -96,6 +96,11 @@
 		<dy>32</dy>
 		<dz>32</dz>
 		<use_2D>false</use_2D> -->		
+        
+        
+        
+<!--         Full DOMAIN -->
+
 		<x_min>-512</x_min>
 		<x_max>512</x_max>
 		<y_min>-2880</y_min>
@@ -106,6 +111,21 @@
 		<dy>32</dy>
 		<dz>32</dz>
 		<use_2D>false</use_2D>		
+        
+        
+        
+        
+        
+<!--         <x_min>-128</x_min>
+		<x_max>128</x_max>
+		<y_min>-1440</y_min>
+		<y_max>1440</y_max>
+		<z_min>-1440</z_min>
+		<z_max>1440</z_max>
+		<dx>32</dx>
+		<dy>32</dy>
+		<dz>32</dz>
+		<use_2D>false</use_2D> -->
 	</domain>
 	
 	<overall>
@@ -471,6 +491,7 @@
 				<int_glc type="double" units="mM/hr">0.0</int_glc>
 				<int_gln type="double" units="mM/hr">0.0</int_gln>
 				<int_lac type="double" units="mM/hr">0.0</int_lac>
+                <organoid_ID type="int" units="dimensionless">0</organoid_ID>
 			</custom_data>
 		</cell_definition>
 
@@ -489,17 +510,19 @@
 		<tumor_radius type="double" units="micron" description="tumor radius">10</tumor_radius>	
         <experimental_average_number_of_cells type="double" units="cells">440000</experimental_average_number_of_cells>
         <experimental_well_volume type="double" units="cells">1.5e-3</experimental_well_volume>
+        
+        <intracellular_simulation type="bool" units="dimensionless">true</intracellular_simulation>
         <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
         
+        <whole_well_simulation type="bool" units="dimensionless">true</whole_well_simulation>
+        
         <two_dim_seeding type="bool" units="dimensionless">false</two_dim_seeding>
-        <random_initial_volume type="bool" units="dimensionless">true</random_initial_volume>
-        <number_of_organoids type="int" units="none">50</number_of_organoids>
+        <!-- 2D Seeding -->
+        <number_of_monolayer_cells type="int" units="none">1200</number_of_monolayer_cells>
+        
+        <!-- 3D Seeding -->
+        <number_of_organoids type="int" units="none">250</number_of_organoids>
 		<initial_tumor_radius type="double" units="none">50</initial_tumor_radius>
-		
-		<whole_well_simulation type="bool" units="dimensionless">true</whole_well_simulation>
-		<intracellular_simulation type="bool" units="dimensionless">true</intracellular_simulation>
-		
-        <number_of_monolayer_cells type="int" units="none">1177</number_of_monolayer_cells>
         
 	</user_parameters>
 	

@@ -2,7 +2,7 @@
 function model = addSpeciesHardConstraints_new(model, SPECIES_HARD_CONSTRAINT)
     % obtain full stoichiometric matrix
     full_Model_S = full(model.S);
-
+    %disp('I AM IN ADDSPECIES HARD CONSTRAINTS')
     % prepare data to be appended to Model
     species_S_rows = [];
     species_bs = [];
@@ -17,6 +17,9 @@ function model = addSpeciesHardConstraints_new(model, SPECIES_HARD_CONSTRAINT)
         species_csenses(i, 1) = 'E';
         species_mets{i} = SPECIES_HARD_CONSTRAINT{i, 1};
         [~, tmp_indices_bool] = ismember(model.mets, SPECIES_HARD_CONSTRAINT{i, 1});
+        if (strcmp(SPECIES_HARD_CONSTRAINT{i, 1},'M_lac_L_c[c]'))
+            %disp(tmp_indices_bool)
+        end
         tmp_indices = find(tmp_indices_bool);
         species_S_rows(i, :) = full_Model_S(tmp_indices, :);
         mets_to_remove{i} = convertStringsToChars(SPECIES_HARD_CONSTRAINT{i, 1});
