@@ -41,8 +41,8 @@ os.chdir(out_path)
 time_point = "output000000"
 number_of_frames = len(saving_times)
 
-Temporospatial_Plotting = 'Y'
-Total_Amount_Analysis = 'N'
+Temporospatial_Plotting = 'N'
+Total_Amount_Analysis = 'Y'
 
 
 

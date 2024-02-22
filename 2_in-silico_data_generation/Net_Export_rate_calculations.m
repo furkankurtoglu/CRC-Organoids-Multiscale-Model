@@ -26,7 +26,7 @@ e_0_gln_wt_crc = glutamine_uptake_rate * volume_of_well / gln_con /integrated_ce
 
 glc_cons = 0:0.1:glucose_uptake_rate;
 
-uptake_
+
 
 
 % uptaken_glucose_conc_by_rate = glucose_uptake_rate * time; %mM = mmol/l

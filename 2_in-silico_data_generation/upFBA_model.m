@@ -170,6 +170,7 @@ function upFBA_model(init_value_data, fold_change_kras_data, fold_change_wt_data
 
     for i=1:num_runs
         initvalue = init_value_mat(:, i);
+        size(initvalue)
         [new_Model, stat, sol, v, r, p, q] = upFBA_pipeline(Model, initvalue, met_IDs_wt, ...
             foldchange_means_wt, foldchange_sds_wt, SPECIES_BOUND_WT);
         WT_Model.model_lst{i} = new_Model;

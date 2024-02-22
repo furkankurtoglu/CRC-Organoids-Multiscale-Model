@@ -272,7 +272,7 @@
 				</death>					
 
 				<volume>  
-					<total units="micron^3">2494</total>
+					<total units="micron^3">1767</total> <!-- 15 micron diameter -->
 					<fluid_fraction units="dimensionless">0.75</fluid_fraction>
 					<nuclear units="micron^3">540</nuclear>
 					
@@ -317,7 +317,7 @@
 					<substrate name="glucose">
 						<secretion_rate units="1/min">0.0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
-						<uptake_rate units="1/min">0.0371</uptake_rate> <!-- 0.0371 -->
+						<uptake_rate units="1/min">0.0</uptake_rate> <!-- 0.0 -->
 						<net_export_rate units="total substrate/min">0</net_export_rate> 
 					</substrate> 
 
@@ -338,7 +338,7 @@
 				<molecular />
 			</phenotype>
 			<custom_data>  
-                <biomass_flux type="double" units="1/hr">0.234</biomass_flux>
+                <biomass_flux type="double" units="1/hr">0.0</biomass_flux>
                 <e_0_glc type="double" units="1/hr">4.344e-11</e_0_glc>
                 <e_0_gln type="double" units="1/hr">1.859e-12</e_0_gln>
                 <fl_glc type="double" units="1/hr">0.0</fl_glc>
@@ -374,7 +374,6 @@
         <whole_well_simulation type="bool" units="dimensionless">true</whole_well_simulation>
         
         <two_dim_seeding type="bool" units="dimensionless">false</two_dim_seeding>
-        
         <!-- 2D Seeding -->
         <number_of_monolayer_cells type="int" units="none">1200</number_of_monolayer_cells>
         

@@ -999,3 +999,4 @@ Glucose_exchange_input,Glutamine_exchange_input,G6P_input,FBP_input,G3P_input,PE
 0.223,0.003,3.87,0.62,0.54,0.54,6.4,0.56,0.88,0.498998998998999,0,0,0,0,0,0,0,0
 0.223,0.003,3.87,0.62,0.54,0.54,6.4,0.56,0.88,0.4994994994995,0,0,0,0,0,0,0,0
 0.223,0.003,3.87,0.62,0.54,0.54,6.4,0.56,0.88,0.5,0,0,0,0,0,0,0,0
+Glucose_exchange_input,Glutamine_exchange_input,G6P_input,FBP_input,G3P_input,PEP_input,lac_exchange_input,gln_input,glu_input,HK_knockdown,solution_output,g6p_change,fbp_change,g3p_change,pep_change,lac_change,gln_change,glu_change

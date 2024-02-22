@@ -38,8 +38,8 @@ saving_times = np.array([0.0, 0.5, 1.0, 2.0, 4.0, 8.0 , 16.0])
 
 main_path = Path(os.getcwd()).parent
 
-GT_list_of_files = glob.glob(str(main_path) + r"\output_GT_dt1e_4_dx16" + r"\*")
-AM_lis_of_files = glob.glob(str(main_path) + r"\output_Adaptive_Mesh" + r"\*")
+GT_list_of_files = glob.glob(str(main_path) + r"\output_Ground_Truth" + r"\*")
+AM_lis_of_files = glob.glob(str(main_path) + r"\output_AM_dt_1_e2_dx_32" + r"\*")
 
 
 # def get_time_points(list_of_files):
@@ -54,7 +54,7 @@ AM_lis_of_files = glob.glob(str(main_path) + r"\output_Adaptive_Mesh" + r"\*")
 
     
 def get_subs_name (): 
-        tree = ET.parse(str(main_path) +"\output_GT_dt1e_4_dx16\initial.xml")
+        tree = ET.parse(str(main_path) +"\output_Ground_Truth\initial.xml")
         root = tree.getroot()
         
         subs_names = []
@@ -63,7 +63,7 @@ def get_subs_name ():
         return subs_names
 
 
-time_pointGT = str(main_path) +"\output_GT_dt1e_4_dx16\output000000"
+time_pointGT = str(main_path) +"\output_Ground_Truth\output000000"
 time_pointAM = str(main_path) +"\output_AM_dt_1_e2_dx_32\output000000"
 
 plot_2D = 'Y'
@@ -71,7 +71,7 @@ glc_gln_analysis = 'Y'
 lac_analysis = 'N'
 save_gif = 'Y'
 
-GT_variance_analysis = 'N'
+GT_variance_analysis = 'Y'
 
 GT_AM_convergence_test = 'N'
 
@@ -155,7 +155,7 @@ if plot_2D == 'Y':
         figAMgln, axsAMgln = plt.subplots()
         
         # color bar
-        tpGT = str(main_path) + "\output_GT_dt1e_4_dx16\output00000006"
+        tpGT = str(main_path) + "\output_Ground_Truth\output00000006"
         ftGT= data_parserGT(tpGT)
         fine_X_GT, fine_Y_GT, fine_glc_GT = ftGT[0]
         a,b,fine_gln_GT = ftGT[1]

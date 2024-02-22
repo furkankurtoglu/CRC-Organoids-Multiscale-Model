@@ -4,9 +4,10 @@ from keras.models import Sequential
 from keras.layers import Dense
 import numpy as np
 import matplotlib.pyplot as plt
-from keras2cpp import export_model
 from sklearn.metrics import r2_score
+from kerasify import export_model
 import csv
+from sklearn.metrics import mean_squared_error
 
 cell_type = 'WT'
 train_model = 'Y'
@@ -20,7 +21,7 @@ plot_verification_results = 'n'
 
 
 # load the dataset
-dataname = cell_type + '_in_silico_data_even_distributed_10k_no_labels_3.csv'
+dataname = cell_type + '_in_silico_data_GLC_GLN_and_Seven_Metabolites.csv'
 
 dataset = []
 with open(dataname,encoding="utf-8-sig") as csv_file:
@@ -28,15 +29,15 @@ with open(dataname,encoding="utf-8-sig") as csv_file:
     line_count = 0
     for row in csv_reader:
         # print(row[:6])
-        dataset.append(row[:6])
+        dataset.append(row[:10])
         
 dataset = np.asarray(dataset,dtype=np.float32)
-dataset_prune_ind = np.where(dataset[:,2] > 6.3)
-dataset = dataset[dataset_prune_ind]
-dataset_prune_ind = np.where(dataset[:,3] > 0.55)
-dataset = dataset[dataset_prune_ind]
-dataset_prune_ind = np.where(dataset[:,4] > 0.87)
-dataset = dataset[dataset_prune_ind]
+# dataset_prune_ind = np.where(dataset[:,2] > 6.3)
+# dataset = dataset[dataset_prune_ind]
+# dataset_prune_ind = np.where(dataset[:,3] > 0.55)
+# dataset = dataset[dataset_prune_ind]
+# dataset_prune_ind = np.where(dataset[:,4] > 0.87)
+# dataset = dataset[dataset_prune_ind]
 
 #plt.hist(dataset[:,5],bins=80)
 # plt.xticks(range(10))
@@ -77,10 +78,12 @@ biomass_multiplier = 100
 
 
 # split into input (X) and output (y) variables
-X = training_data[:,0:5]
-y = training_data[:,5]
+X = training_data[:,0:10]
+y = training_data[:,10]
 multiplier = [100]
 
+x_test = test_data[:,0:10]
+y_test = test_data[:,10]
 # X = training_data[:,0:5]
 # y = training_data[:,5:9]
 # multiplier = [100,10,-10,10]
@@ -92,18 +95,22 @@ y = y*multiplier
 if (train_model == 'Y'):
     # define the keras model
     model = Sequential()
-    model.add(Dense(20, input_shape=(5,), activation='relu'))
-    model.add(Dense(30, activation='relu'))
+    model.add(Dense(20, input_shape=(10,), activation='relu'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(20, activation='relu'))
     model.add(Dense(1, activation='relu'))
     # compile the keras model
     model.compile(loss='mse', optimizer='adam', metrics=['mae'])
     # fit the keras model on the dataset
-    history = model.fit(X, y, epochs=100, batch_size=200)
+    history = model.fit(X, y, epochs=100, batch_size=2000)
+    history2 = model.predict(x_test)   
+    mse_test = mean_squared_error(y_test, history2)
 
 if (draw_convergence == 'Y'):
-    plt.plot(history.history['mae'],'o',color='black')
-    plt.title('mean absoulete error')
-    plt.ylabel('mea')
+    plt.plot(history.history['loss'],'o',color='black')
+    plt.plot(mse_test,'o',color='red')
+    plt.title('mean absolulte error')
+    plt.ylabel('mae')
     plt.xlabel('number of epochs')
     plt.show()
 
@@ -115,12 +122,11 @@ if (draw_convergence == 'Y'):
 # y_test_data = y_test_data * multiplier
 
 
-x_test_data = test_data[:,0:5]
-y_test_data = test_data[:,5]
+x_test_data = test_data[:,0:3]
+y_test_data = test_data[:,3]
 y_test_data = y_test_data * multiplier
 # evaluate the keras model
 print('EVALUATION')
-
 
 
 # glucose_value = 0.0743333333333333
@@ -133,18 +139,18 @@ print('EVALUATION')
 # testing = model.predict([[glucose_value,glutamine_value_001,lactate_conc,glucose_conc,glutamine_conc]])
 # print(testing[0]/biomass_multiplier)
 
-
+#%%
 glucose_value = 0.074
-glutamine_value_001 = 0.000
-lactate_conc = 4.267
-glucose_conc = 0.720
+glutamine_value_001 = 0.003
+gk = 0.1
 glutamine_conc = 0.173
 
 
-testing = model.predict([[glucose_value,glutamine_value_001,lactate_conc,glucose_conc,glutamine_conc]])
+testing = model.predict([[glucose_value,glutamine_value_001,gk]])
 print(testing[0]/biomass_multiplier)
 
-
+import sys
+exit()
 
 
 

@@ -106,7 +106,7 @@ int main( int argc, char* argv[] )
     std::vector <double> gln_i_bds;
     std::vector <double> lac_i_bds;
     
- 
+    int number_of_evaulation = 1000;
     keras2cpp::Tensor in{2};
     keras2cpp::Tensor out;
     std::vector<double> result;
@@ -119,8 +119,6 @@ int main( int argc, char* argv[] )
     std::cout << "Biomass = " << biomass_creation_flux << std::endl;
     
 
-    o_myfile.close();
-    i_myfile.close(); */
 
 
     auto stop = high_resolution_clock::now();

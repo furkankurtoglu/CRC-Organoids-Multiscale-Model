@@ -433,6 +433,7 @@ void simulate_DNN(double intracellular_dt )
                 {
                     cell_pressure = cell_pressure_threshold;
                 }
+
                 // update exchange rates
                 double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index];
                 (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index] = 0.0371 * glc_val_int / 17.5 * (1 - cell_pressure / cell_pressure_threshold);
