@@ -3,7 +3,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
 %     HK_kd = 'N';
 
 
-    num_of_met_run = 4;
+    num_of_met_run = 5;
     save_data = "Y";
     Simulate_WT = "Y";
     Simulate_KRAS = "N";
@@ -206,7 +206,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
         if save_data == "Y"
             names = {'Glucose_exchange_input','Glutamine_exchange_input','G6P_input','FBP_input','G3P_input','PEP_input','lac_exchange_input','gln_input','glu_input','solution_output'};
 %             names = {'Glucose_exchange_input','Glutamine_exchange_input','solution_output'};
-            writecell(names,'../3_DNN_model_generation/WT_in_silico_data_GLC_GLN_and_Seven_Metabolites.csv',Delimiter=',',WriteMode='append')
+            writecell(names,'../3_DNN_model_generation/WT_in_silico_data_GLC_GLN_and_Seven_Metabolites_5_even.csv',Delimiter=',',WriteMode='append')
         end
         i=1;
         total_iteration = 0;
@@ -269,7 +269,7 @@ function [right] = upFBA_model_maxBiomass(init_value_data, fold_change_kras_data
                                 if save_data == "Y"
                                     %%writematrix(sol_vector,'./data.csv',Delimiter=',',WriteMode='append');
                                     %writematrix(sol_vector,'../DNN_model_generation/WT_in_silico_data_even_NO_INTRACELLULAR.csv',Delimiter=',',WriteMode='append');
-                                    writematrix(int_met_vector,'../3_DNN_model_generation/WT_in_silico_data_GLC_GLN_and_Seven_Metabolites.csv',Delimiter=',',WriteMode='append');
+                                    writematrix(int_met_vector,'../3_DNN_model_generation/WT_in_silico_data_GLC_GLN_and_Seven_Metabolites_5_even.csv',Delimiter=',',WriteMode='append');
                                     %writematrix(int_met_vector,'../3_DNN_model_generation/HK_Gene_Knockout_trials.csv',Delimiter=',',WriteMode='append')
                                 end
                                 total_iteration = total_iteration + iteration;

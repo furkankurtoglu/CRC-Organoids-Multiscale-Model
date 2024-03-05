@@ -169,7 +169,14 @@ void setup_tissue( void )
     bool Two_Dim_Seeding =  parameters.bools( "two_dim_seeding" );
     
     std::cout << Two_Dim_Seeding << std::endl;
-    
+
+    double xmin = microenvironment.mesh.bounding_box[0]; 
+    double ymin = microenvironment.mesh.bounding_box[1]; 
+    double zmin = microenvironment.mesh.bounding_box[2]; 
+
+    double xmax = microenvironment.mesh.bounding_box[3]; 
+    double ymax = microenvironment.mesh.bounding_box[4]; 
+    double zmax = microenvironment.mesh.bounding_box[5];
     
     Cell* pCell; 
 	
@@ -178,21 +185,32 @@ void setup_tissue( void )
     if ( Two_Dim_Seeding == true )
     {
         // 2D Cell Seeding 
-        double xmin = microenvironment.mesh.bounding_box[0]; 
-        double ymin = microenvironment.mesh.bounding_box[1]; 
-        double zmin = microenvironment.mesh.bounding_box[2]; 
-
-        double xmax = microenvironment.mesh.bounding_box[3]; 
-        double ymax = microenvironment.mesh.bounding_box[4]; 
-        double zmax = microenvironment.mesh.bounding_box[5];        
         
         // place CRC_WT 
         //Cell_Definition* pCD = find_cell_definition( "CRC_WT"); 
         srand(time(0));
-        double max_number_of_monolayer_cells = 1291;
+        double min_number_of_monolayer_cells = parameters.doubles( "minimum_number_of_monolayer_cells" );
+        double max_number_of_monolayer_cells = parameters.doubles( "maximum_number_of_monolayer_cells" );
         ////////////////////////////////////////////////////////////////
+        double min_g6p_conc = parameters.doubles( "min_g6p_conc" );
+        double max_g6p_conc = parameters.doubles( "max_g6p_conc" );
+        double min_fbp_conc = parameters.doubles( "min_fbp_conc" );
+        double max_fbp_conc = parameters.doubles( "max_fbp_conc" );
+        double min_g3p_conc = parameters.doubles( "min_g3p_conc" );
+        double max_g3p_conc = parameters.doubles( "max_g3p_conc" );
+        double min_pep_conc = parameters.doubles( "min_pep_conc" );
+        double max_pep_conc = parameters.doubles( "max_pep_conc" );
+        double min_lac_conc = parameters.doubles( "min_lac_conc" );
+        double max_lac_conc = parameters.doubles( "max_lac_conc" );
+        double min_gln_conc = parameters.doubles( "min_gln_conc" );
+        double max_gln_conc = parameters.doubles( "max_gln_conc" );
+        double min_glu_conc = parameters.doubles( "min_glu_conc" );
+        double max_glu_conc = parameters.doubles( "max_glu_conc" );
         
-        double number_of_monolayer_cells = 1083 + (1291 - 1083) * UniformRandom();
+        
+        ////////
+        
+        double number_of_monolayer_cells = min_number_of_monolayer_cells + (max_number_of_monolayer_cells - min_number_of_monolayer_cells) * UniformRandom();
         for( double n = 0 ; n < number_of_monolayer_cells ; n++ )
         {
             
@@ -226,13 +244,13 @@ void setup_tissue( void )
             pCell->state.orientation = {1,0,0};
             pCell->phenotype.geometry.polarity = 1;
             
-            pCell->custom_data[i_g6p_i] = 1.68 + (6 - 1.68) * UniformRandom();//
-            pCell->custom_data[i_fbp_i] = 0.16 + (1.08 - 0.16) * UniformRandom();//
-            pCell->custom_data[i_g3p_i] = 0.24 + (0.84 - 0.24) * UniformRandom();//
-            pCell->custom_data[i_pep_i] = 0.24 + (0.84 - 0.24) * UniformRandom();//
-            pCell->custom_data[i_lac_i] = 6.4 + (19.2-6.4) * UniformRandom();//
-            pCell->custom_data[i_gln_i] = 0.56 + (1.08 - 0.56) * UniformRandom();//
-            pCell->custom_data[i_glu_i] = 0.88 + (1.56 - 0.88) * UniformRandom();// 
+            pCell->custom_data[i_g6p_i] = min_g6p_conc + (max_g6p_conc - min_g6p_conc) * UniformRandom();//
+            pCell->custom_data[i_fbp_i] = min_fbp_conc + (max_fbp_conc - min_fbp_conc) * UniformRandom();//
+            pCell->custom_data[i_g3p_i] = min_g3p_conc + (max_g3p_conc - min_g3p_conc) * UniformRandom();//
+            pCell->custom_data[i_pep_i] = min_pep_conc + (max_pep_conc - min_pep_conc) * UniformRandom();//
+            pCell->custom_data[i_lac_i] = min_lac_conc + (max_lac_conc-min_lac_conc) * UniformRandom();//
+            pCell->custom_data[i_gln_i] = min_gln_conc + (max_gln_conc - min_gln_conc) * UniformRandom();//
+            pCell->custom_data[i_glu_i] = min_glu_conc + (max_glu_conc- min_glu_conc) * UniformRandom();// 
             
             
             double a = uniform_random();
@@ -249,16 +267,6 @@ void setup_tissue( void )
     }
     else
     {
-
-        double xmin = microenvironment.mesh.bounding_box[0]; 
-        double ymin = microenvironment.mesh.bounding_box[1]; 
-        double zmin = microenvironment.mesh.bounding_box[2]; 
-        
-        double xmax = microenvironment.mesh.bounding_box[3]; 
-        double ymax = microenvironment.mesh.bounding_box[4]; 
-        double zmax = microenvironment.mesh.bounding_box[5];  
-		
-
 		double cell_radius = cell_defaults.phenotype.geometry.radius; 
 		// double initial_tumor_radius = 46; // parameters.doubles("initial_tumor_radius");
 		double initial_tumor_radius = parameters.doubles("initial_tumor_radius");
@@ -326,8 +334,6 @@ void setup_tissue( void )
                     
             }
     }
-    
-	
 	return; 
 }
 
@@ -433,6 +439,10 @@ void simulate_DNN(double intracellular_dt )
                 static int i_glu_i = (*all_cells)[i]->custom_data.find_variable_index( "int_glu" );
                 static int biomass_result = (*all_cells)[i]->custom_data.find_variable_index( "biomass_flux" );
                 
+                double k1_glucose = get_single_signal((*all_cells)[i],"custom:k1_glucose");
+                double k1_glutamine = get_single_signal((*all_cells)[i],"custom:k1_glutamine" );
+                
+                
                 keras2cpp::Tensor in{9};
                 keras2cpp::Tensor out;
 
@@ -448,8 +458,6 @@ void simulate_DNN(double intracellular_dt )
                 // update exchange rates
                 double glc_local_concentration = (*all_cells)[i]->nearest_density_vector()[glc_index];
                 double gln_local_concentration = (*all_cells)[i]->nearest_density_vector()[gln_index];
-                double k1_glucose = 0.00021238095*60; // k1 = 0.223/60/17.5 = 0.00021238095 1/min, 0.223 = r*, 17.5 = rho*
-                double k1_glutamine = 0.0000091*60; // k1 = 0.003/60/5.5
                 double glucose_boundary_for_fba = glc_local_concentration * k1_glucose;
                 double glutamine_boundary_for_fba = gln_local_concentration * k1_glutamine;
 
@@ -512,10 +520,7 @@ void simulate_DNN(double intracellular_dt )
                 (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
                 //std::cout << "Cell ID : " << (*all_cells)[i]->ID <<  "    Biomass After = " << (*all_cells)[i]->phenotype.volume.total << std::endl;
 
-                
-                (*all_cells)[i]->state.orientation = {1,0,0};
-                (*all_cells)[i]->phenotype.geometry.polarity = 1;
-                
+
                 
                 if ( (*all_cells)[i]->phenotype.volume.total > 1000*2) // 
                     {        
@@ -530,59 +535,103 @@ void simulate_DNN(double intracellular_dt )
                     }
             }
         }
-        
- 
-        
-        /* // KRAS type simulation
-        else if ((*all_cells)[i]->type == 1)
-        {  
-            keras2cpp::Tensor in{5};
-            keras2cpp::Tensor out;
-            double glc_val_int = (*all_cells)[i]->nearest_density_vector()[glc_index];
-            double gln_val_int = (*all_cells)[i]->nearest_density_vector()[gln_index];
-            
-            
-            double u_glc = (*all_cells)[i]->custom_data[1] * exp_ave_n_cells / exp_vol_well * glc_val_int;
-            double u_gln = (*all_cells)[i]->custom_data[2] * exp_ave_n_cells / exp_vol_well * gln_val_int;
-            
-            float fl_glc = u_glc;
-            float fl_gln = u_gln;
-            
-            //std::cout << "Glucose = " << fl_glc << std::endl;
-            //std::cout << "Glutamine = " << fl_gln << std::endl;    
-            
-            in.data_ = {0.223,0.003,19.2,1.08,1.56};
-            out = KRAS_Model(in); // model evaluation
-            out.print();
-            
-            std::vector<double> result;
-            result = out.result_vector();
-            // std::vector<double> result = out.result_vector();
-            
-            double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_normalizer");
-            
-            //(*all_cells)[i]->custom_data[biomass_vi]  = biomass_creation_flux;
-            
-            double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
-            (*all_cells)[i]->custom_data[0]  = biomass_creation_flux; // FURKAN to Fix = Manually written indices for custom data - USE dictionaries !!!!!
-            (*all_cells)[i]->custom_data[3]  = fl_glc;
-            (*all_cells)[i]->custom_data[4]  = fl_gln;
-            (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
-            
-            (*all_cells)[i]->phenotype.secretion.uptake_rates[glc_index]=fl_glc;
-            (*all_cells)[i]->phenotype.secretion.uptake_rates[gln_index]=fl_gln;
-            
-            
-
-            if ( (*all_cells)[i]->phenotype.volume.total > 2494*2)
-                {
-                    (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
-                }
-            else
-                {
-                    (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0;
-                }
-        } */
-        
     }
+}
+
+
+void create_coarse_microenvironment(Microenvironment* Pcoarse_well)
+{
+    // Annotate
+    Pcoarse_well->name = "coarse_well";
+    Pcoarse_well->spatial_units = "micron";
+    Pcoarse_well->mesh.units = "micron";
+    Pcoarse_well->time_units = "min";
+    
+    // Add metabolites to coarse well
+    Pcoarse_well->set_density( 0 , "glucose", "mM", 30000 , 0.00 ); // Ref: https://www.ncbi.nlm.nih.gov/pubmed/7597991 
+    Pcoarse_well->add_density( "glutamine", "mM", 30000 , 0.0 );
+    Pcoarse_well->add_density( "lactate", "mM", 30000 , 0.0);
+    
+    
+    // 1D Voxels
+    double dx = 32;
+    double dy = 5760;
+    double dz = 5760;
+    
+    // 1D Microenvironment creation
+    Pcoarse_well->resize_space( 512.0, 5120.0, -2880.0, 2880.0, -2880.0, 2880.0, dx, dy, dz );
+
+
+    // No Dirichlet Conditions
+    Pcoarse_well->set_substrate_dirichlet_activation(0,false);
+    Pcoarse_well->set_substrate_dirichlet_activation(1,false);
+    Pcoarse_well->set_substrate_dirichlet_activation(2,false);
+    
+    
+    // Set 1D solver
+    Pcoarse_well->diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_1D;   
+    
+    // Set Initial Conditions
+    int coarse_well_voxel_number = Pcoarse_well->mesh.voxels.size();    
+    for ( int m = 0; m < coarse_well_voxel_number ; m++)
+    {
+        (*Pcoarse_well)(m)[0]=17.5; // glucose
+        (*Pcoarse_well)(m)[1]=5.5; // glutamine
+        (*Pcoarse_well)(m)[2]=0; //lactate
+    }
+
+    Pcoarse_well->display_information( std::cout );
+    
+    // Save the initial data
+    Pcoarse_well->write_to_matlab("output/output00000000_microenvironment1.mat"); 
+
+    
+    return;
+}
+
+
+void create_transfer_region(Microenvironment* PTransfer)
+{
+    // Annotate
+    PTransfer->name = "transfer_region";
+    PTransfer->spatial_units = "micron";
+    PTransfer->mesh.units = "micron";
+    PTransfer->time_units = "min";
+
+    // Add metabolites to transfer region
+    PTransfer->set_density( 0 , "glucose", "mmHg", 30000 , 0.00 );
+    PTransfer->add_density( "glutamine", "mM", 30000 , 0.0 );
+    PTransfer->add_density( "lactate", "mM", 30000 , 0.0);
+
+      
+    // 3D Voxel
+    double tr_dx = 32;
+    double tr_dy = 32;
+    double tr_dz = 32;
+    
+    // Set 3D meshes
+    PTransfer->resize_space( 480.0, 544.0, -2880, 2880, -2880, 2880, tr_dx, tr_dy, tr_dz );
+    
+    // No Dirichlet Conditions
+    PTransfer->set_substrate_dirichlet_activation(0,false);
+    PTransfer->set_substrate_dirichlet_activation(1,false);
+    PTransfer->set_substrate_dirichlet_activation(2,false);
+    
+    // Set 3D solver
+    PTransfer->diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_3D;   
+    
+    // Set Initial Conditions
+    int transfer_region_voxel_number = PTransfer->mesh.voxels.size(); 
+    for ( int m = 0; m < transfer_region_voxel_number ; m++)
+    {
+        (*PTransfer)(m)[0]=17.5; // glucose
+        (*PTransfer)(m)[1]=5.5; // glutamine
+        (*PTransfer)(m)[2]=0; //lactate
+    }
+    
+    PTransfer->display_information( std::cout );
+    // Save the initial data
+    PTransfer->write_to_matlab("output/output00000000_microenvironment2.mat");    
+    
+    return;
 }

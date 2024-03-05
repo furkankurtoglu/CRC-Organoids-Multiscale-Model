@@ -339,14 +339,10 @@
 			</phenotype>
 			<custom_data>  
                 <biomass_flux type="double" units="1/hr">0.0</biomass_flux>
-                <e_0_glc type="double" units="1/hr">4.344e-11</e_0_glc>
-                <e_0_gln type="double" units="1/hr">1.859e-12</e_0_gln>
-                <fl_glc type="double" units="1/hr">0.0</fl_glc>
-                <fl_gln type="double" units="1/hr">0.0</fl_gln>
-				<biomass_result type="double" units="1/hr">0.0</biomass_result>
-				<glucose_result type="double" units="1/hr">0.0</glucose_result>
-				<glutamine_result type="double" units="1/hr">0.0</glutamine_result>
-				<lactate_result type="double" units="1/hr">0.0</lactate_result>
+                <k1_glucose type="double" units="1/min">0.00021238095</k1_glucose> <!-- k1_glucose = 0.223/60/17.5 = 0.00021238095 1/min, 0.223 = r*, 17.5 = rho*-->
+				<k1_glutamine type="double" units="1/min">0.0000091</k1_glutamine> <!-- k1_glutamine = 0.003/60/5.5 = 0.0000091 1/min, 0.003 = r*, 5.5 = rho* -->
+				<glucose_result type="double" units="1/min">0.0</glucose_result>  
+				<glutamine_result type="double" units="1/hr">0.0</glutamine_result> 
 				<int_g6p type="double" units="mM/hr">0</int_g6p>
                 <int_fbp type="double" units="mM/hr">0</int_fbp>
 				<int_g3P type="double" units="mM/hr">0</int_g3P>
@@ -367,19 +363,39 @@
 	
 	<user_parameters>
 		<!-- <random_seed type="int" units="dimensionless">0</random_seed>  -->
-		
-		<tumor_radius type="double" units="micron" description="tumor radius">10</tumor_radius>	
-        
-        <intracellular_simulation type="bool" units="dimensionless">true</intracellular_simulation>
-        <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
+			
         
         <whole_well_simulation type="bool" units="dimensionless">true</whole_well_simulation>
         
+        <!-- Intracellular Model Parameters -->
+        <intracellular_simulation type="bool" units="dimensionless">true</intracellular_simulation>
+        <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
+ 
+ 
+            <!-- Intracellular Concentrations -->
+        <min_g6p_conc type="double" description="" units="none">1.68</min_g6p_conc>
+        <max_g6p_conc type="double" units="none">6</max_g6p_conc>        
+        <min_fbp_conc type="double" units="none">0.16</min_fbp_conc>
+        <max_fbp_conc type="double" units="none">1.08</max_fbp_conc> 
+        <min_g3p_conc type="double" units="none">0.24</min_g3p_conc>
+        <max_g3p_conc type="double" units="none">0.84</max_g3p_conc> 
+        <min_pep_conc type="double" units="none">0.24</min_pep_conc>
+        <max_pep_conc type="double" units="none">0.84</max_pep_conc> 
+        <min_lac_conc type="double" units="none">6.4</min_lac_conc>
+        <max_lac_conc type="double" units="none">19.2</max_lac_conc> 
+        <min_gln_conc type="double" units="none">0.56</min_gln_conc>
+        <max_gln_conc type="double" units="none">1.08</max_gln_conc> 
+        <min_glu_conc type="double" units="none">0.88</min_glu_conc>
+        <max_glu_conc type="double" units="none">1.56</max_glu_conc> 
+
+        <!-- Seeding Method -->
         <two_dim_seeding type="bool" units="dimensionless">true</two_dim_seeding>
-        <!-- 2D Seeding -->
-        <number_of_monolayer_cells type="int" units="none">1200</number_of_monolayer_cells>
         
-        <!-- 3D Seeding -->
+            <!-- 2D Seeding -->
+        <minimum_number_of_monolayer_cells type="double" units="none">1083</minimum_number_of_monolayer_cells>
+        <maximum_number_of_monolayer_cells type="double" units="none">1291</maximum_number_of_monolayer_cells>
+        
+            <!-- 3D Seeding -->
         <number_of_organoids type="int" units="none">180</number_of_organoids>
 		<initial_tumor_radius type="double" units="none">50</initial_tumor_radius>
         

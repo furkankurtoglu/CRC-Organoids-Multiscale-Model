@@ -121,81 +121,20 @@ int main( int argc, char* argv[] )
 	setup_microenvironment(); // modify this in the custom code 
 	std::cout << "setup microvironment is done" << std::endl;
 	bool intracellular_simulation = parameters.bools( "intracellular_simulation" );
-	
 	bool whole_well =  parameters.bools( "whole_well_simulation" );
-	
-	Microenvironment coarse_well;
-	Microenvironment transfer_region;
-	
+ 
 
-    std::cout << "whole well simulation is active" << std::endl;
-    coarse_well.name = "coarse_well";
-    coarse_well.spatial_units = "micron";
-    coarse_well.mesh.units = "micron";
-    coarse_well.time_units = "min";
-    
-    coarse_well.set_density( 0 , "oxygen", "mM", 108000 , 0.00 );
-    coarse_well.add_density( "glucose", "mM", 30000 , 0.0 );
-    coarse_well.add_density( "chemokine", "mM", 40000 , 0.0);
-    // coarse_well.resize_space( 100, 1 , 1 );
-    
-    double dx = 32;
-    double dy = 2880;
-    double dz = 2880;
-    
-    // coarse_well.resize_space( -dx/2.0+16 , dx/2.0+16, 256.0, 5104.0 , -dz/2.0+16 , dz/2.0+16 , dx, dy, dz );
-    coarse_well.resize_space( 512.0, 5120.0, -2880.0, 2880.0, -2880.0, 2880.0, dx, dy, dz );
-    std::vector<double> dirichlet_condition = { 0 , 0, 0 };
+    // Create Coarse Microenvironment
+    Microenvironment coarse_well;
+    Microenvironment* PCoarse_well = &coarse_well;
+    create_coarse_microenvironment(PCoarse_well);
 
-    coarse_well.set_substrate_dirichlet_activation(0,false);
-    coarse_well.set_substrate_dirichlet_activation(1,false);
-    coarse_well.set_substrate_dirichlet_activation(2,false);
-    
-    coarse_well.diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_1D;   
-    
-
-    int coarse_well_voxel_number = coarse_well.mesh.voxels.size();
-    
-    for ( int m = 0; m < coarse_well_voxel_number ; m++)
-    {
-        coarse_well(m)[0]=17.5; // oxygen
-        coarse_well(m)[1]=5.5; // glucose
-        coarse_well(m)[2]=0; //chemokine
-    }
-
-    coarse_well.display_information( std::cout );
-    coarse_well.write_to_matlab("output/output00000000_microenvironment1.mat");
-    
-    
-    transfer_region.name = "transfer_region";
-    transfer_region.spatial_units = "micron";
-    transfer_region.mesh.units = "micron";
-    transfer_region.time_units = "min";
-    
-    double tr_dx = 32;
-    double tr_dy = 32;
-    double tr_dz = 32;
-
-    transfer_region.set_density( 0 , "glucose", "mmHg", 30000 , 0.00 );
-    transfer_region.add_density( "glutamine", "mM", 30000 , 0.0 );
-    transfer_region.add_density( "lactate", "mM", 30000 , 0.0);
-    transfer_region.resize_space( 480.0, 544.0, -2880, 2880, -2880, 2880, tr_dx, tr_dy, tr_dz );
-    
-    transfer_region.diffusion_decay_solver = diffusion_decay_solver__constant_coefficients_LOD_3D;   
-    
-    for ( int m = 0; m < transfer_region.mesh.voxels.size() ; m++)
-    {
-        transfer_region(m)[0]=17.5; // glucose
-        transfer_region(m)[1]=5.5; // glucose
-        transfer_region(m)[2]=0; //chemokine
-    }
-    
-    transfer_region.display_information( std::cout );
-    transfer_region.write_to_matlab("output/output00000000_microenvironment2.mat");    
-        
-			
+    // Create Transfer Region
+    Microenvironment transfer_region;
+    Microenvironment* PTransfer = &transfer_region;
+    create_transfer_region(PTransfer);
+    			
 	std::cout << "whole well is created" << std::endl;
-	
 	
 	/* PhysiCell setup */ 
  	
@@ -211,7 +150,7 @@ int main( int argc, char* argv[] )
 
 	std::cout << "setup tissue is done" << std::endl;
 
-    double DNN_intracellular_dt = 6;
+    double DNN_intracellular_dt = 0.01;
     double last_intracellular_time  = 0.0; 
     double intracellular_dt_tolerance = 0.001 * DNN_intracellular_dt; 
     double next_intracellular_update = DNN_intracellular_dt; 
@@ -373,24 +312,6 @@ int main( int argc, char* argv[] )
             // std::vector<double> left_side_before_diffusion = {transfer_region(1)[0], transfer_region(1)[1], transfer_region(1)[2]};
             
             transfer_region.simulate_diffusion_decay(diffusion_dt);
-            
-            
-            // std::vector<double> right_side_after_diffusion = {transfer_region(0)[0], transfer_region(0)[1], transfer_region(0)[2]};
-            // std::vector<double> left_side_after_diffusion = {transfer_region(1)[0], transfer_region(1)[1], transfer_region(1)[2]};
-            
-            // left side overwrite
-            // coarse_well(0)[0] += left_side_after_diffusion[0] - left_side_before_diffusion[0];
-            // coarse_well(0)[1] += left_side_after_diffusion[1] - left_side_before_diffusion[1];
-            // coarse_well(0)[2] += left_side_after_diffusion[2] - left_side_before_diffusion[2];
-            // Dirichlet Boundary Condition
-            // coarse_well(coarse_well_voxel_number-1)[0] = 0.285;
-            
-            // right side overwrite
-            //std::cout << y_240 << std::endl;
-            // double oxy_diff = right_side_after_diffusion[0] - right_side_before_diffusion[0];
-            // double glu_diff = right_side_after_diffusion[1] - right_side_before_diffusion[1];
-            // double chem_diff = right_side_after_diffusion[2] - right_side_before_diffusion[2];
-            
             std::vector<double> v3 = {0, 0, 0};
 
             // Coarsen "coarse" side of transfer region
