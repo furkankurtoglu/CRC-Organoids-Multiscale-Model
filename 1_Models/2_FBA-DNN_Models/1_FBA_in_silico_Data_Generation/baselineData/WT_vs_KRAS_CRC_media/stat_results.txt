@@ -1,0 +1,74 @@
+GLUT 1 p-value:2.605996e-43 
+HK 1 p-value:2.605996e-43 
+HPI 1 p-value:1.092060e-27 
+PFK 1 p-value:2.707363e-05 
+FBP 0 p-value:1 
+ALDO 1 p-value:7.762109e-06 
+TPI 1 p-value:7.762109e-06 
+GAPDH 1 p-value:1.699458e-07 
+13DPG-phophatase 0 p-value:1 
+PGK 1 p-value:1.699458e-07 
+DPGM 0 p-value:1 
+DPGase 0 p-value:1 
+PGAM 1 p-value:1.202050e-07 
+ENO 1 p-value:1.202050e-07 
+PYK 1 p-value:8.000038e-21 
+PDH 1 p-value:5.555903e-14 
+G6PD 1 p-value:1.092060e-27 
+PGL 1 p-value:1.092060e-27 
+6PGDH 1 p-value:1.092060e-27 
+RPE 1 p-value:7.556373e-06 
+RPM 0 p-value:1 
+TA 1 p-value:6.428414e-06 
+TK1 1 p-value:5.246047e-06 
+TK2 1 p-value:6.428414e-06 
+CS 1 p-value:4.394426e-11 
+CLY 0 p-value:1 
+IDH1 1 p-value:1.895986e-32 
+IDH3 0 p-value:1 
+IDH2 0 p-value:1 
+AKGD 1 p-value:1.760684e-14 
+SCOAS 1 p-value:1.760684e-14 
+SDHA 0 p-value:1 
+SDHC(D) 1 p-value:1.760684e-14 
+FUM2 0 p-value:1 
+FUM1 1 p-value:1.760684e-14 
+MDH2 0 p-value:1 
+MDH1 0 p-value:1 
+MMALIC 0 p-value:1 
+succinate-Q reductase 0 p-value:1 
+cytochrome oxidase 1 p-value:6.569480e-27 
+NADH-Q reductase 1 p-value:1.873115e-28 
+ATP synthase 1 p-value:6.432835e-28 
+LDH 1 p-value:3.546176e-20 
+MCT 1 p-value:2.605996e-43 
+GLNS 0 p-value:1 
+GDH2 1 p-value:3.687948e-04 
+GDH1(3) 0 p-value:8.857851e-01 
+H2O (m<->c) 1 p-value:8.735503e-29 
+O2 (m<->c) 1 p-value:6.569480e-27 
+CO2 (m<->c) 1 p-value:5.636950e-09 
+Pi (m<->c) 1 p-value:1.004656e-27 
+H (m<->c) 1 p-value:2.308301e-13 
+MPC 1 p-value:3.918778e-12 
+NADH (m<->c) 1 p-value:2.737377e-03 
+NH4 (m<->c) 1 p-value:1.723329e-31 
+H2O (e<->c) 1 p-value:2.426555e-29 
+O2 (e<->c) 1 p-value:6.569480e-27 
+CO2 (e<->c) 1 p-value:1.230332e-13 
+Pi (e<->c) 1 p-value:4.056344e-29 
+H (e<->c) 1 p-value:2.692904e-12 
+ASCT2 0 p-value:1 
+NH4 (e<->c) 1 p-value:1.723329e-31 
+H2O (b<->e) 1 p-value:2.426555e-29 
+O2 (b<->e) 1 p-value:6.569480e-27 
+CO2 (b<->e) 1 p-value:1.230332e-13 
+Pi (b<->e) 1 p-value:4.056344e-29 
+H (b<->e) 1 p-value:8.780446e-07 
+Lac (b<->e) 1 p-value:2.605996e-43 
+Glc (b<->e) 1 p-value:2.605996e-43 
+Gln (b<->e) 0 p-value:1 
+NH4 (b<->e) 1 p-value:1.723329e-31 
+ATPase 0 p-value:1 
+biomass_obj 1 p-value:2.605996e-43 
+GS 1 p-value:1.895986e-32 

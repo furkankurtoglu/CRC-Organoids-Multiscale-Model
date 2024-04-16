@@ -154,7 +154,7 @@ int main( int argc, char* argv[] )
     double last_intracellular_time  = 0.0; 
     double intracellular_dt_tolerance = 0.001 * DNN_intracellular_dt; 
     double next_intracellular_update = DNN_intracellular_dt; 
-	/* Users typically stop modifying here. END USERMODS */ 
+	/* Users typically stop modifying here. */ 
 	
 	// set MultiCellDS save options 
 
@@ -252,112 +252,101 @@ int main( int argc, char* argv[] )
 
 			// update the microenvironment
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
-			
 
             coarse_well.simulate_diffusion_decay(diffusion_dt);
+ 
+            //simulate_non_regular_mesh(Microenvironment* Pcoarse_well, Microenvironment* PTransfer);
         
              //std::cout << "Coarse Well diffusion is done" << std::endl;
             // Obtain coarse well concentrations
-            std::vector<double> v1 = {0, 0, 0};
+            std::vector<double> v1 = {0, 0, 0}; 
             std::vector<double> v2 = {0, 0, 0};
             for ( int m = 0; m < coarse_well.mesh.voxels.size() ; m++)
             {
-                double mic_cen_x = coarse_well.mesh.voxels[m].center[0];
-                if (mic_cen_x == 272)
+                // Coarse microenvironment is 1D domain in Y and Z directions. There are multiple voxels in X directions.
+                double mic_cen_x = coarse_well.mesh.voxels[m].center[0]; // Matching one big bread slice in a X-axis
+                if (abs(mic_cen_x - 528) < 0.1 * 32 ) // 32 = coarse_well.mesh.dx???? 
                 { 
-                    v1[0]+=coarse_well(m)[0]; //oxygen
-                    v1[1]+=coarse_well(m)[1]; //glucose
-                    v1[2]+=coarse_well(m)[2]; //chemokine
+                    v1[0]=coarse_well(m)[0]; //glucose    
+                    v1[1]=coarse_well(m)[1]; //glutmaine
+                    v1[2]=coarse_well(m)[2]; //lactate
                 }
+                //std::cout << "Obtaining Coarse well Concentrations" 
+                //std::cout << v1 << std::endl;
             }
         
             // Copy coarse well concentrations into "coarse" side of transfer region
             for ( int m = 0; m < transfer_region.mesh.voxels.size() ; m++)
             {
+                // Transfer region is 3D domain. The top voxels in X dimension corresponds the lowest X voxel in coarse microenvironment. 
+                
                 double mic_cen_x = transfer_region.mesh.voxels[m].center[0];
-                if (mic_cen_x == 272)
+                if (abs(mic_cen_x - 528) < 0.1 * 32 )
                 { 
-                    transfer_region(m)[0]=v1[0]; // oxygen
-                    transfer_region(m)[1]=v1[1]; // glucose
-                    transfer_region(m)[2]=v1[2]; // chemokine
+                    transfer_region(m)[0]=v1[0]; // glucose
+                    transfer_region(m)[1]=v1[1]; // glutamine
+                    transfer_region(m)[2]=v1[2]; // lactate
                 }
+                //std::cout << v1 << std::endl;
             }
 
             // Obtain fine microenvironment concentrations
-            int tr_index = 0;
-            int row_length = 90;
-            int jump = row_length + 1;
             for ( int m = 0; m < microenvironment.mesh.voxels.size() ; m++)
             {  
                 double mic_cen_x = microenvironment.mesh.voxels[m].center[0];
-                if (mic_cen_x == 496)
+                
+                if (abs(mic_cen_x - 496) < 0.1 * 32 )
                 {
-                    transfer_region(tr_index)[0]=microenvironment(m)[0]; //oxygen
-                    transfer_region(tr_index)[1]=microenvironment(m)[1]; //glucose
-                    transfer_region(tr_index)[2]=microenvironment(m)[2]; //chemokine
+                    int tr_id = transfer_region.nearest_voxel_index(microenvironment.mesh.voxels[m].center);
+                    //std::cout << microenvironment.mesh.voxels[m].center << std::endl;
+                    transfer_region(tr_id)[0]=microenvironment(m)[0]; //glucose
+                    transfer_region(tr_id)[1]=microenvironment(m)[1]; //glutamine
+                    transfer_region(tr_id)[2]=microenvironment(m)[2]; //lactate
 
-                    tr_index += 2; 
-                    // if ((tr_index != 0) && ((tr_index + 1)%row_length == 0))
-                    // {
-                    // 	tr_index += jump;
-                    // }
-                    // else
-                    // {
-                    // 	tr_index += 2;
-                    // }
                 }
             }
             
-            // std::vector<double> right_side_before_diffusion = {transfer_region(0)[0], transfer_region(0)[1], transfer_region(0)[2]};
-            // std::vector<double> left_side_before_diffusion = {transfer_region(1)[0], transfer_region(1)[1], transfer_region(1)[2]};
-            
+            // Simulate Transfer Region
             transfer_region.simulate_diffusion_decay(diffusion_dt);
+            
+            // Updating Coarse and Fine Microenvironments based on the transfer region
             std::vector<double> v3 = {0, 0, 0};
-
+            double voxel_counter_for_transfer_region = 0;
+            
             // Coarsen "coarse" side of transfer region
             for ( int m = 0; m < transfer_region.mesh.voxels.size() ; m++)
             {
                 double mic_cen_x = transfer_region.mesh.voxels[m].center[0];
-                if (mic_cen_x == 528)
+                if (abs(mic_cen_x - 528) < 0.1 * 32 ) 
                 { 
-                    v3[0] += transfer_region(m)[0]*transfer_region.mesh.voxels[m].volume;
-                    v3[1] += transfer_region(m)[1]*transfer_region.mesh.voxels[m].volume;
-                    v3[2] += transfer_region(m)[2]*transfer_region.mesh.voxels[m].volume;
-                    //std::cout << "Glucose difference per voxel  : "  <<glu_diff/y_240 << std::endl; 
-                    //microenvironment(m)[0] += oxy_diff/y_240; //oxygen
-                    //microenvironment(m)[1] += glu_diff/y_240; //glucose
-                    //microenvironment(m)[2] += chem_diff/y_240; //chemokine
+                    v3[0] += transfer_region(m)[0]; // Glucose
+                    v3[1] += transfer_region(m)[1]; // Glutamine
+                    v3[2] += transfer_region(m)[2]; // Lactate
+                    voxel_counter_for_transfer_region = voxel_counter_for_transfer_region + 1.0;
                 }
             }
-            v3[0] /= coarse_well.mesh.voxels[0].volume;
-            v3[1] /= coarse_well.mesh.voxels[0].volume;
-            v3[2] /= coarse_well.mesh.voxels[0].volume;
-
-            coarse_well(0)[0] = v3[0];
-            coarse_well(0)[1] = v3[1];
-            coarse_well(0)[2] = v3[2];
+            v3[0] = v3[0]/voxel_counter_for_transfer_region;
+            v3[1] = v3[1]/voxel_counter_for_transfer_region;
+            v3[2] = v3[2]/voxel_counter_for_transfer_region;
+            
+            std::vector<double> Nearest_location = {528,0,0};
+            int idx = coarse_well.nearest_voxel_index(Nearest_location);
+            
+            coarse_well(idx)[0] = v3[0];
+            coarse_well(idx)[1] = v3[1];
+            coarse_well(idx)[2] = v3[2];
             
             // Write values for "fine" side of transfer region
-            tr_index = 0;
             for ( int m = 0; m < microenvironment.mesh.voxels.size() ; m++)
             {  
                 double mic_cen_x = microenvironment.mesh.voxels[m].center[0];
-                if (mic_cen_x == 496)
+                if (abs(mic_cen_x - 496) < 0.1 * 32 ) 
                 { 
-                    microenvironment(m)[0] = transfer_region(tr_index)[0]; //oxygen
-                    microenvironment(m)[1] = transfer_region(tr_index)[1];
-                    microenvironment(m)[2] = transfer_region(tr_index)[2];
-
-                    tr_index += 2;
-                    // if ((tr_index != 0) && ((tr_index + 1)%row_length == 0))
-                    // {
-                    // 	tr_index += jump;
-                    // }
-                    // else
-                    // {
-                    // 	tr_index += 1;
-                    // }
-                }	
+                    int fine_id = transfer_region.nearest_voxel_index(microenvironment.mesh.voxels[m].center);
+                    microenvironment(m)[0] = transfer_region(fine_id)[0]; //glucose
+                    microenvironment(m)[1] = transfer_region(fine_id)[1]; //glutamine
+                    microenvironment(m)[2] = transfer_region(fine_id)[2]; //lactate
+                }
             }
 			
 			if ( intracellular_simulation == true)

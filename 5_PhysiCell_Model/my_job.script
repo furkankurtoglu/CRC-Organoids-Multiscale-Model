@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH -J CRC_Monolayer
+#SBATCH -p general
+#SBATCH -o out_%j.txt
+#SBATCH -e err_%j.err
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=fkurtog@iu.edu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=12:00:00
+#SBATCH --mem=16G
+#SBATCH -A r00241
+#SBATCH --cpus-per-task=64
+export OMP_NUM_THREADS=64
+
+#Run your program
+srun make clean
+srun make
+srun make data-cleanup
+srun ./CRC_monolayer

@@ -70,12 +70,12 @@
 #include "../modules/PhysiCell_settings.h"
 
 // assume these files; can override in read_DNN()
-auto WT_Model = keras2cpp::Model::load("WT_DNN_including_intracellular.model");
+auto WT_Model = keras2cpp::Model::load("WT_DNN_including_intracellular_seven_metabolites_5_even.model");
 auto KRAS_Model = keras2cpp::Model::load("KRAS_DNN.model");
 
 void create_cell_types( void )
 {
-    read_DNN("WT_DNN_including_intracellular.model", "KRAS_DNN.model");
+    read_DNN("WT_DNN_including_intracellular_seven_metabolites_5_even.model", "KRAS_DNN.model");
 
 	// set the random seed 
 	SeedRandom(time(0));  
@@ -244,24 +244,159 @@ void setup_tissue( void )
             pCell->state.orientation = {1,0,0};
             pCell->phenotype.geometry.polarity = 1;
             
-            pCell->custom_data[i_g6p_i] = min_g6p_conc + (max_g6p_conc - min_g6p_conc) * UniformRandom();//
-            pCell->custom_data[i_fbp_i] = min_fbp_conc + (max_fbp_conc - min_fbp_conc) * UniformRandom();//
-            pCell->custom_data[i_g3p_i] = min_g3p_conc + (max_g3p_conc - min_g3p_conc) * UniformRandom();//
-            pCell->custom_data[i_pep_i] = min_pep_conc + (max_pep_conc - min_pep_conc) * UniformRandom();//
-            pCell->custom_data[i_lac_i] = min_lac_conc + (max_lac_conc-min_lac_conc) * UniformRandom();//
-            pCell->custom_data[i_gln_i] = min_gln_conc + (max_gln_conc - min_gln_conc) * UniformRandom();//
-            pCell->custom_data[i_glu_i] = min_glu_conc + (max_glu_conc- min_glu_conc) * UniformRandom();// 
+            double b = UniformRandom(); // random number for fpb
+            double c = UniformRandom(); // random number for lac
+            double d = UniformRandom(); // random number for g6p
+            double e = UniformRandom(); // random number for g3p
+            double f = UniformRandom(); // random number for pep
+            double g = UniformRandom(); // random number for gln            
+            double h = UniformRandom(); // random number for glu
+            if ( b < 0.268947 )
+            {
+                pCell->custom_data[i_fbp_i] = NormalRandom(0.252,0.06);
+            }
+            else if ( b < 0.495160 )
+            {
+                pCell->custom_data[i_fbp_i] = NormalRandom(0.436,0.06);
+            } 
+            else if ( b < 0.7062775 )
+            {
+                pCell->custom_data[i_fbp_i] = NormalRandom(0.62,0.06);
+            }  
+            else if ( b < 0.880750 )
+            {
+                pCell->custom_data[i_fbp_i] = NormalRandom(0.804,0.06);
+            } 
+            else
+            {
+                pCell->custom_data[i_fbp_i] = NormalRandom(0.988,0.06);
+            } 
+            
+            if ( c  < 0.794388)
+            {
+                pCell->custom_data[i_g6p_i] = NormalRandom(8,0.8);
+            }
+            else
+            {
+                pCell->custom_data[i_g6p_i] = NormalRandom(11.2,0.8);
+            }
+
+            if ( d  < 0.699352)
+            {
+                pCell->custom_data[i_g6p_i] = NormalRandom(2.04,0.16);
+            }
+            else if ( d < 0.967112 )
+            {
+                pCell->custom_data[i_g6p_i] = NormalRandom(2.76,1.8);
+            }
+            else
+            {
+                pCell->custom_data[i_g6p_i] = NormalRandom(3.48,1.8);
+            }
+        
+            if ( e < 0.22701 )
+            {
+                pCell->custom_data[i_g3p_i] = NormalRandom(0.3,0.03);
+            }
+            else if ( e < 0.439666 )
+            {
+                pCell->custom_data[i_g3p_i] = NormalRandom(0.42,0.03);
+            } 
+            else if ( e < 0.639062 )
+            {
+                pCell->custom_data[i_g3p_i] = NormalRandom(0.54,0.03);
+            }  
+            else if ( e < 0.825583 )
+            {
+                pCell->custom_data[i_g3p_i] = NormalRandom(0.66,0.03);
+            } 
+            else
+            {
+                pCell->custom_data[i_g3p_i] = NormalRandom(0.78,0.03);
+            } 
+            
+            if ( f < 0.220617 )
+            {
+                pCell->custom_data[i_pep_i] = NormalRandom(0.3,0.03);
+            }
+            else if ( f < 0.430461 )
+            {
+                pCell->custom_data[i_pep_i] = NormalRandom(0.42,0.03);
+            } 
+            else if ( f < 0.630183 )
+            {
+                pCell->custom_data[i_pep_i] = NormalRandom(0.54,0.03);
+            }  
+            else if ( f < 0.819931 )
+            {
+                pCell->custom_data[i_pep_i] = NormalRandom(0.66,0.03);
+            } 
+            else
+            {
+                pCell->custom_data[i_pep_i] = NormalRandom(0.78,0.03);
+            }             
+
+
+            if ( g < 0.228697 )
+            {
+                pCell->custom_data[i_gln_i] = NormalRandom(0.612,0.027);
+            }
+            else if ( g < 0.442418 )
+            {
+                pCell->custom_data[i_gln_i] = NormalRandom(0.716,0.027);
+            } 
+            else if ( g < 0.641666 )
+            {
+                pCell->custom_data[i_gln_i] = NormalRandom(0.82,0.027);
+            }  
+            else if ( g < 0.82727 )
+            {
+                pCell->custom_data[i_gln_i] = NormalRandom(0.924,0.027);
+            } 
+            else
+            {
+                pCell->custom_data[i_gln_i] = NormalRandom(1.028,0.027);
+            }
+
+            if ( h < 0.237606 )
+            {
+                pCell->custom_data[i_glu_i] = NormalRandom(0.948,0.035);
+            }
+            else if ( h < 0.455234 )
+            {
+                pCell->custom_data[i_glu_i] = NormalRandom(1.084,0.035);
+            } 
+            else if ( h < 0.654009 )
+            {
+                pCell->custom_data[i_glu_i] = NormalRandom(1.22,0.035);
+            }  
+            else if ( h < 0.835203 )
+            {
+                pCell->custom_data[i_glu_i] = NormalRandom(1.356,0.035);
+            } 
+            else
+            {
+                pCell->custom_data[i_glu_i] = NormalRandom(1.492,0.035);
+            }              
+
+            //pCell->custom_data[i_g6p_i] = min_g6p_conc + (max_g6p_conc - min_g6p_conc) * UniformRandom();//
+            //pCell->custom_data[i_fbp_i] = min_fbp_conc + (max_fbp_conc - min_fbp_conc) * UniformRandom();//
+            //pCell->custom_data[i_g3p_i] = min_g3p_conc + (max_g3p_conc - min_g3p_conc) * UniformRandom();//
+            //pCell->custom_data[i_pep_i] = min_pep_conc + (max_pep_conc - min_pep_conc) * UniformRandom();//
+            //pCell->custom_data[i_lac_i] = min_lac_conc + (max_lac_conc-min_lac_conc) * UniformRandom();//
+            //pCell->custom_data[i_gln_i] = min_gln_conc + (max_gln_conc - min_gln_conc) * UniformRandom();//
+            //pCell->custom_data[i_glu_i] = min_glu_conc + (max_glu_conc- min_glu_conc) * UniformRandom();// 
             
             
             double a = uniform_random();
-                if ( a < 0.2)
-                {   
-                    pCell->phenotype.volume.multiply_by_ratio(1 + a);
-                } 
-                if ( a > 0.8)
-                {   
-                    pCell->phenotype.volume.multiply_by_ratio(1 * a);
-                } 
+            if ( a < 0.2)
+            {   
+                pCell->phenotype.volume.multiply_by_ratio(1 + a);
+            } 
+            if ( a > 0.8)
+            {   
+                pCell->phenotype.volume.multiply_by_ratio(1 * a);
+            } 
             
         }
     }
@@ -429,26 +564,18 @@ void simulate_DNN(double intracellular_dt )
             {  
             if ((*all_cells)[i]->type == 0)
             {
-                //housekeeping
-                static int i_g6p_i = (*all_cells)[i]->custom_data.find_variable_index( "int_g6p" );
-                static int i_fbp_i = (*all_cells)[i]->custom_data.find_variable_index( "int_fbp" );
-                static int i_g3p_i = (*all_cells)[i]->custom_data.find_variable_index( "int_g3P" );
-                static int i_pep_i = (*all_cells)[i]->custom_data.find_variable_index( "int_pep" );
-                static int i_lac_i = (*all_cells)[i]->custom_data.find_variable_index( "int_lac" );
-                static int i_gln_i = (*all_cells)[i]->custom_data.find_variable_index( "int_gln" );
-                static int i_glu_i = (*all_cells)[i]->custom_data.find_variable_index( "int_glu" );
-                static int biomass_result = (*all_cells)[i]->custom_data.find_variable_index( "biomass_flux" );
+                // Create Tensors for DNN
+                keras2cpp::Tensor in{9};
+                keras2cpp::Tensor out;
                 
+                
+                // Sense 
                 double k1_glucose = get_single_signal((*all_cells)[i],"custom:k1_glucose");
                 double k1_glutamine = get_single_signal((*all_cells)[i],"custom:k1_glutamine" );
                 
-                
-                keras2cpp::Tensor in{9};
-                keras2cpp::Tensor out;
-
                 // get pressure
                 double cell_pressure = (*all_cells)[i]->state.simple_pressure;
-                double cell_pressure_threshold = 0.55;
+                double cell_pressure_threshold = parameters.doubles("pressure_threshold");
                     
                 if (cell_pressure > cell_pressure_threshold)
                 {
@@ -458,45 +585,72 @@ void simulate_DNN(double intracellular_dt )
                 // update exchange rates
                 double glc_local_concentration = (*all_cells)[i]->nearest_density_vector()[glc_index];
                 double gln_local_concentration = (*all_cells)[i]->nearest_density_vector()[gln_index];
-                double glucose_boundary_for_fba = glc_local_concentration * k1_glucose;
-                double glutamine_boundary_for_fba = gln_local_concentration * k1_glutamine;
+                double glucose_boundary_for_fba = glc_local_concentration * k1_glucose; // mM/hr 
+                double glutamine_boundary_for_fba = gln_local_concentration * k1_glutamine; // mM/hr
 
                 //****************
                 //update exchange boundaries for FBA
                 double u_glc = glucose_boundary_for_fba;
                 double u_gln = glutamine_boundary_for_fba;
                 
-                float fl_glc = u_glc;
-                float fl_gln = u_gln;
- /*                std::cout << "double : " << u_glc <<std::endl;
-                std::cout << "float : " << fl_glc <<std::endl;
-                 */
+                float fl_glc;
+                float fl_gln;
+                
+                if (parameters.ints("model_definition") == 1)
+                {
+                    float fl_glc = 0.223;
+                    float fl_gln = 0.003;
+                }
+                if (parameters.ints("model_definition") == 2)
+                {
+                    float fl_glc = u_glc;
+                    float fl_gln = u_gln;
+                    //std::cout << "Glucose uptake rate" << fl_glc << std::endl;
+                    //std::cout << "Glutamine uptake rate" << fl_gln << std::endl;
+                }
+                
+                if (parameters.ints("model_definition") == 3)
+                {
+                    float fl_glc = u_glc;
+                    float fl_gln = u_gln;
+                }
+                if (parameters.ints("model_definition") == 4)
+                {
+                    //std::cout << "Model 4 is working" << std::endl;
+                    float pressure_feedback = (1 - cell_pressure / cell_pressure_threshold);
+                    if (pressure_feedback > 0)
+                    {
+                        float fl_glc = u_glc * pressure_feedback;
+                        float fl_gln = u_gln * pressure_feedback;
+                    }
+                    else
+                    {
+                        float fl_glc = u_glc * 0;
+                        float fl_gln = u_gln * 0;                        
+                    }
+                }
+                if (parameters.ints("model_definition") == 5)
+                {
+                    float fl_glc = 0;
+                    float fl_gln = 0;
+                }
+                
                 
                 //update intracellular boundaries for FBA
 
-                float fl_int_conc_g6p = (*all_cells)[i]->custom_data[i_g6p_i];
-                float fl_int_conc_fbp = (*all_cells)[i]->custom_data[i_fbp_i];
-                float fl_int_conc_g3p = (*all_cells)[i]->custom_data[i_g3p_i];
-                float fl_int_conc_pep = (*all_cells)[i]->custom_data[i_pep_i];
-                float fl_int_conc_lac = (*all_cells)[i]->custom_data[i_lac_i];
-                float fl_int_conc_gln = (*all_cells)[i]->custom_data[i_gln_i];
-                float fl_int_conc_glu = (*all_cells)[i]->custom_data[i_glu_i];
+                float fl_int_conc_g6p = get_single_signal((*all_cells)[i],"custom:int_g6p" );
+                float fl_int_conc_fbp = get_single_signal((*all_cells)[i],"custom:int_fbp" );
+                float fl_int_conc_g3p = get_single_signal((*all_cells)[i],"custom:int_g3P" );
+                float fl_int_conc_pep = get_single_signal((*all_cells)[i],"custom:int_pep" );
+                float fl_int_conc_lac = get_single_signal((*all_cells)[i],"custom:int_lac" );
+                float fl_int_conc_gln = get_single_signal((*all_cells)[i],"custom:int_gln" );
+                float fl_int_conc_glu = get_single_signal((*all_cells)[i],"custom:int_glu" );
 
-/*                 std::cout << "FBA MODEL UPDATE" << std::endl; 
-                std::cout << "glc exchange boundary : " << u_glc << std::endl;
-                std::cout << "gln exchange boundary: " << u_gln << std::endl;           
-                std::cout << "Input Intracellular Glucose = " << fl_int_conc_glu << std::endl;
-                std::cout << "Input Intracellular Glutamine = " << fl_int_conc_gln << std::endl;    
-                std::cout << "Input Intracellular Lactate = " << fl_int_conc_lac << std::endl;    
-                std::cout << "-----------------------------" << std::endl;
-                std::cout << std::endl; */
                 
                 in.data_ = {fl_glc,fl_gln,fl_int_conc_g6p,fl_int_conc_fbp,fl_int_conc_g3p,fl_int_conc_pep,fl_int_conc_lac,fl_int_conc_gln,fl_int_conc_glu};
-                //in.data_ = {0.223,0.003,6.4,0.56,1.08}; //test values
                 
                 // model evaluation
-                //out = WT_Model(in); 
-                //std::cout << "ARRIVED" << std::endl;
+                out = WT_Model(in); 
                 //out.print();
                 
                 std::vector<double> result;
@@ -504,34 +658,39 @@ void simulate_DNN(double intracellular_dt )
                 
                 double biomass_creation_flux = result[0]/parameters.doubles("DNN_biomass_normalizer");
                 
-                (*all_cells)[i]->phenotype.secretion.net_export_rates[glc_index] = glucose_boundary_for_fba * 1000 /60; // 1000 cubic-micron = V_cell, E in mmol/min
-                (*all_cells)[i]->phenotype.secretion.net_export_rates[gln_index] = glucose_boundary_for_fba * 1000 /60; // 1000 cubic-micron = V_cell 
+                (*all_cells)[i]->phenotype.secretion.net_export_rates[glc_index] = glucose_boundary_for_fba * 1000 / 60  * -1; // 1000 cubic-micron = V_cell, E in mmol/min
+                (*all_cells)[i]->phenotype.secretion.net_export_rates[gln_index] = glutamine_boundary_for_fba * 1000 / 60 * -1; // 1000 cubic-micron = V_cell 
                 
                 
                 
-                (*all_cells)[i]->custom_data[biomass_result]  = biomass_creation_flux;
-                //std::cout << "Biomass Before = " << (*all_cells)[i]->phenotype.volume.total << std::endl;
+                set_single_behavior((*all_cells)[i],"custom:biomass_flux",biomass_creation_flux);
+                set_single_behavior((*all_cells)[i],"custom:glucose_exchange",glucose_boundary_for_fba);
+                set_single_behavior((*all_cells)[i],"custom:glutamine_exchange",glutamine_boundary_for_fba);
                 
                 // update cellular volume
-                //double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
-                double volume_increase_ratio = 1 + ( 0.044 / 60 * intracellular_dt);
-                (*all_cells)[i]->custom_data[biomass_result]  = biomass_creation_flux;
+                double volume_increase_ratio = 1 + ( biomass_creation_flux / 60 * intracellular_dt);
                 //std::cout << "Biomass = " << biomass_creation_flux << std::endl;
                 (*all_cells)[i]->phenotype.volume.multiply_by_ratio(volume_increase_ratio);
                 //std::cout << "Cell ID : " << (*all_cells)[i]->ID <<  "    Biomass After = " << (*all_cells)[i]->phenotype.volume.total << std::endl;
 
 
-                
-                if ( (*all_cells)[i]->phenotype.volume.total > 1000*2) // 
-                    {        
-                       //if (cell_pressure < 0.55)
-                       //{
-                       (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99;
-                       //}
+                if ( (*all_cells)[i]->phenotype.volume.total > 1000*2) // get_base_signal to get 1000 
+                    {   
+                        if (parameters.ints("model_definition") == 3)
+                        {
+                            if (cell_pressure < cell_pressure_threshold)
+                            {
+                                (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99; // set single behavior "cell entry"
+                            }
+                        }
+                        else
+                        {
+                           (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 9e99; //set single behavior "cell entry"
+                        }
                     }
                 else
                     {
-                        (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0;
+                        (*all_cells)[i]->phenotype.cycle.data.transition_rate(0,0) = 0.0; //set single behavior "cell entry"
                     }
             }
         }
@@ -635,3 +794,9 @@ void create_transfer_region(Microenvironment* PTransfer)
     
     return;
 }
+
+
+/* void simulate_non_regular_mesh(Microenvironment* PCoarse_well, Microenvironment* PTransfer)
+{
+    
+} */

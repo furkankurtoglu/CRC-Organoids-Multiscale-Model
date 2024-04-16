@@ -324,7 +324,7 @@
 					<substrate name="glutamine">
 						<secretion_rate units="1/min">0.0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
-						<uptake_rate units="1/min">0.00005</uptake_rate>
+						<uptake_rate units="1/min">0.0</uptake_rate>
 						<net_export_rate units="total substrate/min">0</net_export_rate> 
 					</substrate> 
 
@@ -339,10 +339,10 @@
 			</phenotype>
 			<custom_data>  
                 <biomass_flux type="double" units="1/hr">0.0</biomass_flux>
-                <k1_glucose type="double" units="1/min">0.00021238095</k1_glucose> <!-- k1_glucose = 0.223/60/17.5 = 0.00021238095 1/min, 0.223 = r*, 17.5 = rho*-->
-				<k1_glutamine type="double" units="1/min">0.0000091</k1_glutamine> <!-- k1_glutamine = 0.003/60/5.5 = 0.0000091 1/min, 0.003 = r*, 5.5 = rho* -->
-				<glucose_result type="double" units="1/min">0.0</glucose_result>  
-				<glutamine_result type="double" units="1/hr">0.0</glutamine_result> 
+                <k1_glucose type="double" units="1/min">0.01274285714</k1_glucose> <!-- k1_glucose = 0.223/17.5 = 0.00021238095 1/hr, 0.223 = r*, 17.5 = rho*-->
+				<k1_glutamine type="double" units="1/min">0.00054545454</k1_glutamine> <!-- k1_glutamine = 0.003/5.5 = 0.0000091 1/hr, 0.003 = r*, 5.5 = rho* -->
+				<glucose_exchange type="double" units="1/hr">0.223</glucose_exchange>  
+				<glutamine_exchange type="double" units="1/hr">0.003</glutamine_exchange> 
 				<int_g6p type="double" units="mM/hr">0</int_g6p>
                 <int_fbp type="double" units="mM/hr">0</int_fbp>
 				<int_g3P type="double" units="mM/hr">0</int_g3P>
@@ -363,30 +363,33 @@
 	
 	<user_parameters>
 		<!-- <random_seed type="int" units="dimensionless">0</random_seed>  -->
-			
-        
         <whole_well_simulation type="bool" units="dimensionless">true</whole_well_simulation>
         
         <!-- Intracellular Model Parameters -->
         <intracellular_simulation type="bool" units="dimensionless">true</intracellular_simulation>
         <DNN_biomass_normalizer type="double" units="dimensionless">100</DNN_biomass_normalizer>
  
- 
             <!-- Intracellular Concentrations -->
-        <min_g6p_conc type="double" description="" units="none">1.68</min_g6p_conc>
-        <max_g6p_conc type="double" units="none">6</max_g6p_conc>        
-        <min_fbp_conc type="double" units="none">0.16</min_fbp_conc>
-        <max_fbp_conc type="double" units="none">1.08</max_fbp_conc> 
-        <min_g3p_conc type="double" units="none">0.24</min_g3p_conc>
-        <max_g3p_conc type="double" units="none">0.84</max_g3p_conc> 
-        <min_pep_conc type="double" units="none">0.24</min_pep_conc>
-        <max_pep_conc type="double" units="none">0.84</max_pep_conc> 
-        <min_lac_conc type="double" units="none">6.4</min_lac_conc>
-        <max_lac_conc type="double" units="none">19.2</max_lac_conc> 
-        <min_gln_conc type="double" units="none">0.56</min_gln_conc>
-        <max_gln_conc type="double" units="none">1.08</max_gln_conc> 
-        <min_glu_conc type="double" units="none">0.88</min_glu_conc>
-        <max_glu_conc type="double" units="none">1.56</max_glu_conc> 
+            <min_g6p_conc type="double" description="" units="none">1.68</min_g6p_conc>
+            <max_g6p_conc type="double" units="none">6</max_g6p_conc>        
+            <min_fbp_conc type="double" units="none">0.16</min_fbp_conc>
+            <max_fbp_conc type="double" units="none">1.08</max_fbp_conc> 
+            <min_g3p_conc type="double" units="none">0.24</min_g3p_conc>
+            <max_g3p_conc type="double" units="none">0.84</max_g3p_conc> 
+            <min_pep_conc type="double" units="none">0.24</min_pep_conc>
+            <max_pep_conc type="double" units="none">0.84</max_pep_conc> 
+            <min_lac_conc type="double" units="none">6.4</min_lac_conc>
+            <max_lac_conc type="double" units="none">19.2</max_lac_conc> 
+            <min_gln_conc type="double" units="none">0.56</min_gln_conc>
+            <max_gln_conc type="double" units="none">1.08</max_gln_conc> 
+            <min_glu_conc type="double" units="none">0.88</min_glu_conc>
+            <max_glu_conc type="double" units="none">1.56</max_glu_conc> 
+            
+            <!-- Intracellular Model Feedback -->
+            <model_definition type="int" units="none">4</model_definition> <!-- It can be 1,2,3,4 -->
+            <pressure_threshold type="double" units="none">0.55</pressure_threshold>  
+        
+        
 
         <!-- Seeding Method -->
         <two_dim_seeding type="bool" units="dimensionless">true</two_dim_seeding>

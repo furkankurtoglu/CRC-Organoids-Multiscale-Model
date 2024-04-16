@@ -90,6 +90,7 @@ void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt );
 void custom_function( Cell* pCell, Phenotype& phenotype , double dt );
 void create_coarse_microenvironment(Microenvironment* Pcoarse_well);
 void create_transfer_region(Microenvironment* PTransfer);
+//void simulate_non_regular_mesh(Microenvironment* PCoarse_well, Microenvironment* PTransfer);
 
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
